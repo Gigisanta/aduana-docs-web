@@ -157,6 +157,28 @@
     .timeline { display: grid; gap: 12px; counter-reset: step; }
     .step { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; padding: 16px; border: 1px solid var(--line-soft); border-radius: 18px; background: rgba(255,255,255,.03); }
     .step::before { counter-increment: step; content: counter(step); width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: #050505; display: grid; place-items: center; font-weight: 900; }
+
+    .function-grid { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr); gap: 14px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .span-2 { grid-column: 1 / -1; }
+    .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+    .stat-box { border: 1px solid var(--line-soft); border-radius: 16px; background: rgba(255,255,255,.035); padding: 12px; }
+    .stat-box strong { display:block; font-size: 20px; color: var(--ink); }
+    .stat-box span { color: var(--muted); font-size: 12px; }
+    .tool-buttons { display:flex; flex-wrap:wrap; gap: 8px; margin-top: 12px; }
+    .mini-btn { border: 1px solid var(--line-soft); background: #0c1119; color: var(--ink); border-radius: 999px; padding: 9px 11px; font-weight: 800; }
+    .mini-btn.primary { background: var(--gold); color: #080808; border-color: var(--gold); }
+    .mini-btn.danger { color: #ffd2d2; border-color: rgba(255,107,107,.32); background: rgba(255,107,107,.09); }
+    .detail-card { border: 1px solid var(--line-soft); border-radius: 20px; padding: 16px; background: rgba(255,255,255,.03); }
+    .detail-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom: 12px; }
+    .check-grid { display:grid; gap: 8px; margin-top: 12px; }
+    .check-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; border:1px solid var(--line-soft); border-radius:14px; padding:10px; background: rgba(0,0,0,.16); }
+    .check-row input { width:18px; height:18px; accent-color: var(--gold); }
+    .op { cursor:pointer; }
+    .op.active { border-color: rgba(245,200,66,.55); box-shadow: 0 0 0 2px rgba(245,200,66,.12) inset; }
+    .risk-score { font-weight:900; color: var(--gold); }
+    .output-box { margin-top: 12px; min-height: 44px; white-space: pre-wrap; overflow:auto; max-height: 180px; }
+    .roi-panel { margin-top: 16px; }
     .footer { padding: 44px 0 64px; color: var(--muted); border-top: 1px solid var(--line-soft); }
     .sources { font-size: 13px; }
     .sources li { margin: 8px 0; }
@@ -164,8 +186,8 @@
     .mobile-note { display: none; }
 
     @media (max-width: 900px) {
-      .hero-grid, .split, .app-body, .research-grid { grid-template-columns: 1fr; }
-      .cards-3, .cards-2, .metrics, .mini-grid { grid-template-columns: 1fr; }
+      .hero-grid, .split, .app-body, .research-grid, .function-grid { grid-template-columns: 1fr; }
+      .cards-3, .cards-2, .metrics, .mini-grid, .form-grid, .stat-row { grid-template-columns: 1fr; }
       .section-head { display: block; }
       .section-head p { margin-top: 12px; }
       .side { border-right: 0; border-bottom: 1px solid var(--line-soft); display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
@@ -378,41 +400,94 @@
       <div class="wrap">
         <div class="section-head">
           <div>
-            <div class="eyebrow">Demo navegable</div>
-            <h2>Panel operativo mínimo: operaciones, faltantes y evidencia.</h2>
+            <div class="eyebrow">Demo funcional</div>
+            <h2>Un mini sistema operativo de legajos: crear, controlar, exportar y calcular ahorro.</h2>
           </div>
-          <p>Hecho en HTML/CSS/JS nativo. Guarda sólo checks de demo en el navegador; no maneja archivos reales.</p>
+          <p>Hecho en HTML/CSS/JS nativo. Persiste en tu navegador con localStorage. No sube archivos reales ni envía datos a servidores.</p>
         </div>
-        <div class="app-shell" aria-label="Demo de aplicación AduanaDocs">
+        <div class="app-shell" aria-label="Demo funcional de aplicación AduanaDocs">
           <div class="app-bar">
             <strong>AduanaDocs Operaciones</strong>
-            <span class="status"><span class="dot"></span><span id="health">3 operaciones activas</span></span>
+            <span class="status"><span class="dot"></span><span id="health">Operaciones listas</span></span>
           </div>
-          <div class="app-body">
-            <aside class="side" aria-label="Módulos de la demo">
-              <a href="#demo" class="active">Operaciones <span>3</span></a>
-              <a href="#demo">Faltantes <span>7</span></a>
-              <a href="#demo">Vencimientos <span>2</span></a>
-              <a href="#demo">Clientes <span>18</span></a>
-              <a href="#demo">Auditoría <span>Hoy</span></a>
-              <a href="#demo">Reportes <span>PDF</span></a>
-            </aside>
-            <div class="main">
-              <div class="toolbar">
-                <div style="flex:1; min-width:220px">
-                  <label for="search">Buscar operación, cliente o documento</label>
-                  <input id="search" type="search" maxlength="60" placeholder="Ej: IMP, origen, certificado…">
+          <div class="main">
+            <div class="stat-row" aria-label="Indicadores calculados">
+              <div class="stat-box"><strong id="stat-total">0</strong><span>operaciones</span></div>
+              <div class="stat-box"><strong id="stat-risk">0</strong><span>en riesgo</span></div>
+              <div class="stat-box"><strong id="stat-missing">0</strong><span>documentos faltantes</span></div>
+              <div class="stat-box"><strong id="stat-saved">0h</strong><span>ahorro estimado/mes</span></div>
+            </div>
+            <div class="function-grid">
+              <aside class="card" aria-label="Crear operación">
+                <h3>Nueva operación</h3>
+                <p>Creá un legajo demo con checklist automático según tipo de operación.</p>
+                <form id="op-form" class="form-grid">
+                  <div>
+                    <label for="op-id">Código</label>
+                    <input id="op-id" maxlength="24" required placeholder="IMP-2026-0201">
+                  </div>
+                  <div>
+                    <label for="op-kind">Tipo</label>
+                    <select id="op-kind">
+                      <option value="importacion">Importación</option>
+                      <option value="exportacion">Exportación</option>
+                      <option value="transito">Tránsito</option>
+                      <option value="temporal">Temporal</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="op-client">Cliente</label>
+                    <input id="op-client" maxlength="48" required placeholder="Metalúrgica Sur">
+                  </div>
+                  <div>
+                    <label for="op-due">Vencimiento / ETA</label>
+                    <input id="op-due" type="date" required>
+                  </div>
+                  <div class="span-2">
+                    <label for="op-lane">Mercadería / ruta</label>
+                    <input id="op-lane" maxlength="80" placeholder="Autopartes · China → Buenos Aires">
+                  </div>
+                  <div class="span-2">
+                    <label for="op-notes">Notas internas</label>
+                    <textarea id="op-notes" rows="3" maxlength="220" placeholder="Ej: revisar certificado de origen y permiso VUCE"></textarea>
+                  </div>
+                  <button class="btn primary span-2" type="submit">Crear legajo</button>
+                </form>
+                <div class="roi-panel">
+                  <h3>Calculadora ROI rápida</h3>
+                  <div class="form-grid">
+                    <div><label for="roi-hours">Horas/semana persiguiendo docs</label><input id="roi-hours" type="number" min="0" max="80" value="8"></div>
+                    <div><label for="roi-cost">Costo hora equipo USD</label><input id="roi-cost" type="number" min="0" max="200" value="18"></div>
+                  </div>
+                  <p class="notice" id="roi-output" style="margin-top:10px"></p>
                 </div>
-                <div style="width:190px">
-                  <label for="filter">Estado</label>
-                  <select id="filter">
-                    <option value="all">Todos</option>
-                    <option value="risk">En riesgo</option>
-                    <option value="ready">Listos</option>
-                  </select>
+              </aside>
+
+              <section class="card" aria-label="Operaciones y detalle">
+                <div class="toolbar">
+                  <div style="flex:1; min-width:220px">
+                    <label for="search">Buscar operación, cliente o documento</label>
+                    <input id="search" type="search" maxlength="60" placeholder="Ej: IMP, origen, certificado…">
+                  </div>
+                  <div style="width:190px">
+                    <label for="filter">Estado</label>
+                    <select id="filter">
+                      <option value="all">Todos</option>
+                      <option value="risk">En riesgo</option>
+                      <option value="ready">Listos</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
-              <div class="ops" id="ops"></div>
+                <div class="ops" id="ops"></div>
+                <div id="detail" class="detail-card" style="margin-top:14px"></div>
+                <div class="tool-buttons">
+                  <button class="mini-btn primary" id="export-json" type="button">Exportar JSON</button>
+                  <button class="mini-btn" id="export-csv" type="button">Exportar CSV</button>
+                  <button class="mini-btn" id="copy-summary" type="button">Copiar resumen</button>
+                  <button class="mini-btn danger" id="reset-demo" type="button">Reset demo</button>
+                </div>
+                <pre id="demo-output" class="notice output-box" aria-live="polite">Listo para operar.</pre>
+              </section>
             </div>
           </div>
         </div>
@@ -549,37 +624,192 @@
     });
     renderPersona('despachante');
 
-    const operations = [
-      { id: 'IMP-2026-0146', client: 'Metalúrgica Sur', lane: 'Autopartes · Buenos Aires', status: 'ready', pct: 86, due: '09/07', docs: ['Factura comercial', 'Packing list', 'BL', 'Certificado de origen', 'Intervención técnica'] },
-      { id: 'EXP-2026-0092', client: 'Bodega Alto Valle', lane: 'Vino · Brasil', status: 'risk', pct: 58, due: '06/07', docs: ['Factura E', 'Packing', 'Certificado sanitario', 'Permiso embarque'] },
-      { id: 'TRA-2026-0031', client: 'Andes Cargo', lane: 'Tránsito · Chile-Paraguay', status: 'risk', pct: 44, due: 'Hoy', docs: ['Documento de transporte', 'Ruta ISTA', 'Seguro', 'Carta de instrucciones'] }
+    const docTemplates = {
+      importacion: ['Factura comercial', 'Packing list', 'BL/AWB/CRT', 'SEDI', 'Certificado de origen', 'Permiso VUCE si aplica', 'Comprobante VEP/pago'],
+      exportacion: ['Factura E', 'Packing list', 'EC18 / permiso de embarque', 'Certificado sanitario/origen si aplica', 'Documento de transporte', 'Ingreso zona primaria'],
+      transito: ['Documento de transporte', 'MANI SIM', 'MIC/DTA o ruta ISTA', 'Seguro', 'Carta de instrucciones'],
+      temporal: ['Factura proforma/comercial', 'Packing list', 'Garantía / caución', 'Destinación temporal', 'Vencimiento de reexportación', 'Permiso sectorial si aplica']
+    };
+    const seedOperations = [
+      { id: 'IMP-2026-0146', client: 'Metalúrgica Sur', kind: 'importacion', lane: 'Autopartes · China → Buenos Aires', due: '2026-07-09', notes: 'Revisar certificado de origen antes de oficializar.', checked: {'Factura comercial': true, 'Packing list': true, 'BL/AWB/CRT': true, 'SEDI': true, 'Certificado de origen': false, 'Permiso VUCE si aplica': false, 'Comprobante VEP/pago': true} },
+      { id: 'EXP-2026-0092', client: 'Bodega Alto Valle', kind: 'exportacion', lane: 'Vino · Argentina → Brasil', due: '2026-07-06', notes: 'Cliente pide visibilidad del certificado sanitario.', checked: {'Factura E': true, 'Packing list': true, 'EC18 / permiso de embarque': false, 'Certificado sanitario/origen si aplica': false, 'Documento de transporte': true, 'Ingreso zona primaria': false} },
+      { id: 'TRA-2026-0031', client: 'Andes Cargo', kind: 'transito', lane: 'Chile → Paraguay vía Argentina', due: '2026-07-02', notes: 'Validar ruta y seguro antes de liberar.', checked: {'Documento de transporte': true, 'MANI SIM': true, 'MIC/DTA o ruta ISTA': false, 'Seguro': false, 'Carta de instrucciones': true} }
     ];
+    const storageKey = 'aduanaDocsOpsV2';
+    let operations = loadOps();
+    let selectedId = operations[0]?.id || null;
+
     const opsEl = document.getElementById('ops');
+    const detailEl = document.getElementById('detail');
     const search = document.getElementById('search');
     const filter = document.getElementById('filter');
+    const output = document.getElementById('demo-output');
 
+    function loadOps() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+        return Array.isArray(saved) && saved.length ? saved : structuredClone(seedOperations);
+      } catch (_) {
+        return structuredClone(seedOperations);
+      }
+    }
+    function saveOps() { localStorage.setItem(storageKey, JSON.stringify(operations)); }
+    function docsFor(op) { return docTemplates[op.kind] || docTemplates.importacion; }
+    function missingDocs(op) { return docsFor(op).filter(doc => !op.checked?.[doc]); }
+    function pct(op) { return Math.round(((docsFor(op).length - missingDocs(op).length) / docsFor(op).length) * 100); }
+    function daysUntil(dateStr) {
+      const due = new Date(dateStr + 'T23:59:59');
+      return Math.ceil((due - new Date()) / 86400000);
+    }
+    function riskScore(op) {
+      const missing = missingDocs(op).length;
+      const days = daysUntil(op.due);
+      let score = missing * 18;
+      if (days < 0) score += 35;
+      else if (days <= 2) score += 18;
+      if (missingDocs(op).some(d => /SEDI|MANI|VUCE|Garantía|Certificado|Seguro/i.test(d))) score += 14;
+      return Math.min(100, score);
+    }
+    function opStatus(op) { return riskScore(op) >= 45 || missingDocs(op).length >= 2 ? 'risk' : 'ready'; }
+    function fmtDue(op) {
+      const d = daysUntil(op.due);
+      if (d < 0) return `vencido hace ${Math.abs(d)} día(s)`;
+      if (d === 0) return 'vence hoy';
+      return `vence en ${d} día(s)`;
+    }
+    function escapeHtml(str='') {
+      return String(str).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    }
+    function showOutput(text) { output.textContent = text; }
+
+    function renderStats() {
+      const total = operations.length;
+      const risk = operations.filter(op => opStatus(op) === 'risk').length;
+      const missing = operations.reduce((sum, op) => sum + missingDocs(op).length, 0);
+      const hours = Number(document.getElementById('roi-hours').value || 0);
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-risk').textContent = risk;
+      document.getElementById('stat-missing').textContent = missing;
+      document.getElementById('stat-saved').textContent = `${Math.round(hours * 4 * .45)}h`;
+      document.getElementById('health').textContent = `${total} operaciones · ${risk} en riesgo`;
+    }
+    function renderRoi() {
+      const hours = Number(document.getElementById('roi-hours').value || 0);
+      const cost = Number(document.getElementById('roi-cost').value || 0);
+      const savedHours = hours * 4 * .45;
+      const savedUsd = Math.round(savedHours * cost);
+      document.getElementById('roi-output').textContent = `Hipótesis: si AduanaDocs reduce 45% del seguimiento documental, ahorra ${Math.round(savedHours)}h/mes ≈ USD ${savedUsd}/mes. Esto sirve para testear precio, no es promesa contractual.`;
+      renderStats();
+    }
     function renderOps() {
       const q = search.value.trim().toLowerCase();
       const f = filter.value;
       const rows = operations.filter(op => {
-        const hay = `${op.id} ${op.client} ${op.lane} ${op.docs.join(' ')}`.toLowerCase();
-        return (!q || hay.includes(q)) && (f === 'all' || op.status === f);
+        const hay = `${op.id} ${op.client} ${op.lane} ${docsFor(op).join(' ')} ${op.notes}`.toLowerCase();
+        return (!q || hay.includes(q)) && (f === 'all' || opStatus(op) === f);
       });
-      opsEl.innerHTML = rows.map(op => `
-        <article class="op">
+      if (!rows.some(op => op.id === selectedId)) selectedId = rows[0]?.id || operations[0]?.id || null;
+      opsEl.innerHTML = rows.map(op => {
+        const status = opStatus(op);
+        return `<article class="op ${op.id === selectedId ? 'active' : ''}" data-id="${escapeHtml(op.id)}" tabindex="0" role="button" aria-label="Abrir ${escapeHtml(op.id)}">
           <div>
-            <strong>${op.id} · ${op.client}</strong><br>
-            <small>${op.lane} · vencimiento ${op.due}</small>
-            <div class="progress" aria-label="avance ${op.pct}%"><span style="width:${op.pct}%"></span></div>
-            <small>${op.docs.join(' · ')}</small>
+            <strong>${escapeHtml(op.id)} · ${escapeHtml(op.client)}</strong><br>
+            <small>${escapeHtml(op.lane)} · ${fmtDue(op)} · riesgo <span class="risk-score">${riskScore(op)}</span>/100</small>
+            <div class="progress" aria-label="avance ${pct(op)}%"><span style="width:${pct(op)}%"></span></div>
+            <small>${missingDocs(op).length ? `Faltan: ${escapeHtml(missingDocs(op).join(' · '))}` : 'Legajo completo'}</small>
           </div>
-          <span class="tag ${op.status === 'risk' ? 'red' : ''}">${op.status === 'risk' ? 'En riesgo' : 'Listo'}</span>
-        </article>
-      `).join('') || '<p class="notice">Sin resultados. Probá otro filtro.</p>';
-      document.getElementById('health').textContent = `${rows.length} operaciones visibles`;
+          <span class="tag ${status === 'risk' ? 'red' : ''}">${status === 'risk' ? 'En riesgo' : 'Listo'}</span>
+        </article>`;
+      }).join('') || '<p class="notice">Sin resultados. Probá otro filtro.</p>';
+      document.querySelectorAll('.op').forEach(el => {
+        const open = () => { selectedId = el.dataset.id; renderOps(); };
+        el.addEventListener('click', open);
+        el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+      });
+      renderDetail();
+      renderStats();
     }
+    function renderDetail() {
+      const op = operations.find(item => item.id === selectedId);
+      if (!op) { detailEl.innerHTML = '<p class="notice">Seleccioná o creá una operación.</p>'; return; }
+      detailEl.innerHTML = `<div class="detail-head">
+        <div><h3>${escapeHtml(op.id)} · ${escapeHtml(op.client)}</h3><p>${escapeHtml(op.kind)} · ${escapeHtml(op.lane)} · ${fmtDue(op)}</p></div>
+        <span class="tag ${opStatus(op) === 'risk' ? 'red' : ''}">${pct(op)}% completo</span>
+      </div>
+      <p class="notice">${escapeHtml(op.notes || 'Sin notas internas.')}</p>
+      <div class="check-grid">${docsFor(op).map(doc => `<label class="check-row"><input type="checkbox" data-doc="${escapeHtml(doc)}" ${op.checked?.[doc] ? 'checked' : ''}><span>${escapeHtml(doc)}</span><span class="tag ${op.checked?.[doc] ? '' : 'red'}">${op.checked?.[doc] ? 'OK' : 'Falta'}</span></label>`).join('')}</div>
+      <div class="tool-buttons"><button class="mini-btn danger" type="button" id="delete-op">Eliminar legajo</button></div>`;
+      detailEl.querySelectorAll('input[type="checkbox"]').forEach(box => {
+        box.addEventListener('change', () => {
+          op.checked[box.dataset.doc] = box.checked;
+          saveOps();
+          renderOps();
+        });
+      });
+      detailEl.querySelector('#delete-op').addEventListener('click', () => {
+        operations = operations.filter(item => item.id !== op.id);
+        selectedId = operations[0]?.id || null;
+        saveOps();
+        renderOps();
+        showOutput(`Legajo eliminado: ${op.id}`);
+      });
+    }
+    document.getElementById('op-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const id = document.getElementById('op-id').value.trim().toUpperCase();
+      if (!id) return;
+      if (operations.some(op => op.id === id)) { showOutput(`Ya existe el legajo ${id}.`); return; }
+      const kind = document.getElementById('op-kind').value;
+      const checked = Object.fromEntries(docsFor({kind}).map(doc => [doc, false]));
+      const op = {
+        id,
+        kind,
+        client: document.getElementById('op-client').value.trim(),
+        lane: document.getElementById('op-lane').value.trim() || 'Ruta sin definir',
+        due: document.getElementById('op-due').value,
+        notes: document.getElementById('op-notes').value.trim(),
+        checked
+      };
+      operations.unshift(op);
+      selectedId = id;
+      saveOps();
+      e.target.reset();
+      setDefaultDue();
+      renderOps();
+      showOutput(`Legajo creado: ${id}. Checklist generado: ${docsFor(op).join(', ')}`);
+    });
+    function exportRows() {
+      return operations.map(op => ({id: op.id, cliente: op.client, tipo: op.kind, ruta: op.lane, vencimiento: op.due, avance: `${pct(op)}%`, riesgo: riskScore(op), faltantes: missingDocs(op).join(' | ')}));
+    }
+    document.getElementById('export-json').addEventListener('click', () => showOutput(JSON.stringify(exportRows(), null, 2)));
+    document.getElementById('export-csv').addEventListener('click', () => {
+      const rows = exportRows();
+      const headers = Object.keys(rows[0] || {id:''});
+      const csv = [headers.join(','), ...rows.map(row => headers.map(h => `"${String(row[h]).replaceAll('"','""')}"`).join(','))].join('\n');
+      showOutput(csv);
+    });
+    document.getElementById('copy-summary').addEventListener('click', async () => {
+      const summary = exportRows().map(r => `${r.id} · ${r.cliente}: ${r.avance}, riesgo ${r.riesgo}/100, faltan ${r.faltantes || 'nada'}`).join('\n');
+      try { await navigator.clipboard.writeText(summary); showOutput('Resumen copiado al portapapeles:\n' + summary); }
+      catch (_) { showOutput(summary); }
+    });
+    document.getElementById('reset-demo').addEventListener('click', () => {
+      operations = structuredClone(seedOperations);
+      selectedId = operations[0].id;
+      saveOps();
+      renderOps();
+      showOutput('Demo reiniciada con datos de ejemplo.');
+    });
+    function setDefaultDue() {
+      const due = new Date();
+      due.setDate(due.getDate() + 7);
+      document.getElementById('op-due').value = due.toISOString().slice(0,10);
+    }
+    ['roi-hours','roi-cost'].forEach(id => document.getElementById(id).addEventListener('input', renderRoi));
     search.addEventListener('input', renderOps);
     filter.addEventListener('change', renderOps);
+    setDefaultDue();
+    renderRoi();
     renderOps();
   </script>
 </body>
