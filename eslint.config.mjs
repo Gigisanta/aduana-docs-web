@@ -4,7 +4,16 @@ import typescript from "eslint-config-next/typescript";
 const eslintConfig = [
   ...coreWebVitals,
   ...typescript,
-  { ignores: [".next/**", "node_modules/**", "next-env.d.ts", "public/legacy-static-app.html"] },
+  {
+    ignores: [
+      ".next/**",
+      ".vercel/**",
+      "out/**",
+      "node_modules/**",
+      "next-env.d.ts",
+      "public/legacy-static-app.html",
+    ],
+  },
   {
     rules: {
       "react-hooks/set-state-in-effect": "off",
