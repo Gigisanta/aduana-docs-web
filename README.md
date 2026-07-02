@@ -2,6 +2,12 @@
 
 Landing page + market-research-informed prototype for a customs documentation management platform aimed at despachantes de aduana, agentes de transporte aduanero, forwarders, and import/export operators.
 
+## Live
+
+- Production: https://aduana-docs-web.vercel.app
+- GitHub: https://github.com/Gigisanta/aduana-docs-web
+- Vercel project: `giolivos-projects/aduana-docs-web`
+
 ## Scope
 
 - Single static `index.html`.
@@ -14,4 +20,4 @@ This prototype does **not** upload or process real customs documents. A producti
 
 ## Deploy
 
-Static HTML deploys directly on Vercel.
+Static HTML deploys directly on Vercel. The GitHub repo is connected to the Vercel project.
