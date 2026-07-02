@@ -4,52 +4,55 @@
 
 - Next.js 16 / React 19 / TypeScript app shell.
 - Local demo workspace with modules: Panel, Legajos, Clientes, Vencimientos, Documentos, Portal cliente, Configuración.
-- Domain model and pure functions for checklist templates, risk, completion, deadline windows, CSV export.
-- Supabase-ready env helpers and SQL migration for production schema/RLS/storage.
-- Legacy static HTML preserved under `public/legacy-static-app.html`.
+- Production architecture corrected after delegated audit: NextAuth v5 + Prisma + Postgres/Neon + R2.
+- Static export on Vercel so the sales demo is public and cheap.
+- Legacy HTML preserved at `public/legacy-static-app.html`.
 
-## Phase 1 — Paid pilot backend
+## Phase 1 — Production backend foundation
 
-1. Create Supabase project.
-2. Apply `supabase/migrations/0001_initial_schema.sql`.
-3. Configure env vars in Vercel:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY` only for trusted server jobs, never client.
-4. Implement Supabase Auth screens.
-5. Replace demo-store operations with Supabase repository methods.
-6. Use private Storage bucket paths: `{workspace_id}/{operation_id}/{doc_id}/{filename}`.
-7. Add audit event insert for every create/update/delete/upload/share action.
+1. Add Auth.js/NextAuth v5 root `auth.ts` with pinned beta version.
+2. Add Prisma Client singleton and run migrations against Neon/Postgres.
+3. Implement workspace creation and membership roles:
+   - owner
+   - admin
+   - operator
+   - client_viewer
+   - auditor
+4. Move demo state behind repository interfaces so UI can switch from local demo to server data.
+5. Add Vitest coverage for domain functions and authorization helpers before CRUD grows.
 
-## Phase 2 — Production document workflow
+## Phase 2 — Core data workflows
 
-- Real file upload/download with signed URLs.
-- Document observation/rejection states.
-- Roles: owner/admin/operator/client_viewer.
-- Portal share tokens with expiration/revocation.
-- Email/WhatsApp copy templates; no automated sending until deliverability and consent are clear.
-- Backups and restore drill.
+1. Clients CRUD.
+2. Legajos CRUD.
+3. Checklist generation per operation kind.
+4. Vencimientos computed from operation dates.
+5. Audit log dual-write in every mutation.
 
-## Phase 3 — Commercial readiness
+## Phase 3 — Documents and client portal
 
-- Concierge onboarding for 3–5 despachantes/ATA.
-- Import client/legajo CSV.
-- Pilot pricing: Starter USD 200–500/mo equivalent ARS or fee per legajo.
-- Measure hours saved, missing-document rate, operation delays avoided.
-- Only then add OCR/API integrations.
+1. R2 bucket private by default.
+2. Upload flow:
+   - Server Action validates session + workspace role.
+   - Server returns signed upload URL.
+   - Browser uploads directly to R2.
+   - Server records metadata and audit event.
+3. Download/share flow:
+   - role-aware Server Action.
+   - signed URL TTL 5 minutes.
+   - portal share tokens scoped to legajo/client.
+4. MIME allowlist and file-size limits.
 
-## Phase 4 — Integrations, if validated
+## Phase 4 — Hardening before paid production
 
-- OCR extraction for invoice/packing/transport docs.
-- ARCA/VUCE/SIM references only via official/legal paths.
-- Accounting/ERP export.
-- Advanced audit/reporting.
+- Rate limiting on auth and file routes.
+- 2FA for owner/admin.
+- Virus scanning pipeline for uploaded files.
+- Backups and restore test.
+- Append-only audit export.
+- Ley 25.326 privacy/data handling review.
+- Pen-test readiness checklist.
 
-## Gates before real documents
+## Why not jump straight to all of this
 
-- Auth live and tested.
-- RLS test suite with cross-tenant denial checks.
-- Private storage policies tested.
-- Audit logs immutable enough for operational review.
-- Data retention/backup policy written.
-- Legal/compliance review for customs document custody.
+The current app is already useful for demos and concierge pilots. The expensive part is secure backend hardening. Build it only after paid pilots confirm workflow and pricing.

@@ -1,44 +1,36 @@
 # Tech decision — AduanaDocs
 
-## Decision
+## Decision after delegated repo audit
 
-Build AduanaDocs as **Next.js 16 + React 19 + TypeScript + Supabase Auth/Postgres/Storage/RLS**.
+Build AduanaDocs as **Next.js 16 + React 19 + TypeScript + NextAuth v5 + Prisma + PostgreSQL/Neon + Cloudflare R2**.
 
-The app keeps a local demo mode for sales, but the production path is Supabase-backed. This is the best fit for customs documentation because the hard part is not rendering UI; it is authenticated multi-tenant access to sensitive documents with storage policies, auditability, and operational simplicity.
+The live app keeps a local demo mode for sales. The production backend should be server-controlled: browser → Next.js Server Actions/API routes → Prisma/Postgres/R2. Do not expose customs-document workflows through direct browser-to-database access.
 
-## What we use in other projects
+## Why this changed
 
-| Pattern seen in Gio repos | Where | Good | Pain / risk |
-|---|---|---|---|
-| Next.js 16 + React 19 | Infrannova, MaatWork CRM, Hub, Nutrición, Varigas, Gym | Best deploy story on Vercel, App Router, server actions, good UI velocity | Build/prerender can fail if client-only APIs leak into server render; keep browser APIs guarded |
-| Tailwind v4 | Most current MaatWork apps | Fast design iteration, tokenized style | `@apply`/config pitfalls; for AduanaDocs we use plain CSS first to reduce moving parts |
-| Prisma | CRM, Hub, Gym, Varigas, Oro Azul | Great schema DX, Studio, clear migrations, easy relational modeling | Heavier runtime/client generation; serverless/edge and version churn can be annoying |
-| Drizzle | Infrannova, Nutrición | Very lean, SQL-like, fast, serverless-friendly | More manual migrations/policies; less batteries-included than Prisma |
-| NextAuth/Auth.js | Several MaatWork apps | Works for app auth and OAuth | Does not solve object storage/RLS by itself; docs product still needs DB/storage policy layer |
-| R2/S3 style object storage | Infrannova-style document systems | Durable and flexible for files | You must build auth/signing/policies/audit surfaces yourself |
+The first scaffold used Supabase because it is fast for MVPs. The deeper audit of Gio's repos and the security architecture review changed the backend decision:
 
-## Why Supabase-first here
+- **AduanaDocs stores sensitive trade data**: CUITs, invoices, BL/AWB/CRT, manifests, permits, guarantees, client contacts.
+- **Auditability matters more than fastest MVP setup**: server-controlled writes make append-only audit logging easier to enforce.
+- **Files should not be database blobs**: documents live in private object storage, with short-lived signed URLs generated only after role checks.
+- **Gio's mature SaaS repos favor Prisma/NextAuth/npm/tests** for complex business domains.
+- **Drizzle remains good for lean SQL**, but it is not the first choice here because the product's core risk is document/security workflow, not ORM minimalism.
 
-AduanaDocs handles customs paperwork: invoices, BL/AWB/CRT, SEDI support, permits, certificates, guarantees, transport docs. The data is multi-tenant and sensitive. Supabase gives us:
+## Stack comparison from Gio repos
 
-- Postgres as source of truth.
-- Auth identities matching database `auth.uid()`.
-- Row Level Security for tenant isolation.
-- Private Storage buckets with SQL policies.
-- Good enough zero-to-paid speed for MVP pilots.
-- No fake backend or hand-rolled auth.
+| Pattern | Where seen | Keep / avoid for AduanaDocs |
+|---|---|---|
+| Next.js 16 + React 19 | Infrannova, CRM, Hub, Nutrición, Varigas, Gym | Keep. Best deploy and App Router story on Vercel. |
+| Prisma | CRM, Hub, Gym, Varigas, Oro Azul | Prefer for production domain schema, migrations, adapter support, relational modeling. |
+| Drizzle | Infrannova, Nutrición | Valid for lean SQL/admin/reporting, not primary backend for document-heavy compliance workflows. |
+| NextAuth/Auth.js v5 | Mature app pattern | Use pinned exact v5 beta; do not use floating `^` for beta auth packages. |
+| Supabase | Good zero-to-paid platform | Keep as a spike/reference only; not the canonical production path after audit. |
+| R2/S3 private storage | Infrannova-style docs | Use for customs files with MIME whitelist + signed URL TTL + audit event. |
+| npm + Vitest | Mature repos | Use npm, add Vitest before backend rewrite grows. |
 
-## Why not Prisma-first now
+## Production rule
 
-Prisma is still valid for internal CRUD-heavy apps. For this product, however, RLS and storage policy correctness matter more than ORM comfort. A Prisma + NextAuth + S3/R2 stack would require more custom security glue. That can be worth it later for enterprise deployments, but not for the first sellable production path.
-
-## Why not Drizzle as the primary app data layer now
-
-Drizzle is lean and performs well. But when using Supabase Auth/RLS, direct Supabase clients keep auth context and policies clearer. Drizzle can be added later for server-only admin/reporting jobs or type-safe migrations, but the first path should keep security obvious.
-
-## Build rule
-
-- Demo mode works without env vars via localStorage.
-- Production mode activates when Supabase env vars exist.
-- Schema/RLS/storage policies live in `supabase/migrations/0001_initial_schema.sql`.
-- No official ARCA/VUCE/SIM integration is claimed until a real integration contract exists.
+- Demo mode can use localStorage and static export for sales validation.
+- Production mode uses server-side auth, workspace membership checks, Prisma transactions, append-only audit events, and private R2 document storage.
+- Database rows keep file metadata only; binary files never go into Postgres.
+- No official ARCA/VUCE/SIM/SITA integration is claimed until a real integration contract exists.

@@ -17,7 +17,6 @@ import {
   toCsv,
   type DeadlineWindow,
 } from "@/lib/domain";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Client, Operation, OperationKind, PlanId } from "@/lib/types";
 
 type RouteId = "panel" | "legajos" | "clientes" | "vencimientos" | "documentos" | "portal" | "config";
@@ -92,7 +91,7 @@ function AppShell() {
             <span>AD</span>
             <strong>AduanaDocs</strong>
           </a>
-          <p>{isSupabaseConfigured() ? "Backend Supabase configurado" : "Demo local · backend Supabase listo por env"}</p>
+          <p>Demo local · backend productivo diseñado con NextAuth, Prisma, Neon y R2</p>
         </div>
         <div className="topbar-actions">
           <span className="pill ok">{state.operations.length} legajos</span>
@@ -143,7 +142,7 @@ function Onboarding({ startSession }: { startSession: (workspaceName: string) =>
         <h1>AduanaDocs</h1>
         <p>
           App SaaS para gestionar legajos, clientes, vencimientos, documentos, portal cliente y auditoría comercial.
-          El demo corre local; producción activa Supabase Auth, Postgres, Storage y RLS.
+          El demo corre local; producción activa auth, base Postgres, storage privado, auditoría y permisos server-side.
         </p>
         <form onSubmit={(e) => { e.preventDefault(); startSession(name); }}>
           <label htmlFor="workspace">Nombre del estudio / workspace</label>
@@ -151,7 +150,7 @@ function Onboarding({ startSession }: { startSession: (workspaceName: string) =>
           <button className="primary" type="submit">Entrar a la app</button>
         </form>
         <div className="proof-grid">
-          <span>Multi-módulo</span><span>Supabase-ready</span><span>RLS + auditoría</span><span>Demo vendible</span>
+          <span>Multi-módulo</span><span>Backend-ready</span><span>Auditoría + permisos</span><span>Demo vendible</span>
         </div>
       </section>
     </main>
@@ -292,8 +291,8 @@ function Badge({ op, docs }: { op: Operation; docs: ReturnType<typeof missingDoc
 function MarketingIntro() {
   return (
     <section id="home" className="marketing">
-      <div><span className="eyebrow">De prototipo a sistema real</span><h1>Gestión documental aduanera lista para pilotos pagos.</h1><p>Legajos, clientes, documentos, vencimientos, portal cliente, auditoría y backend Supabase-ready para pasar de demo a operación real sin inventar integraciones oficiales.</p><a className="primary link-button" href="#app">Entrar a la app</a></div>
-      <aside className="card"><h3>Decisión técnica</h3><p>Next.js + Supabase Auth/Postgres/Storage/RLS. Demo local para vender; modo productivo con env vars y migraciones SQL.</p></aside>
+      <div><span className="eyebrow">De prototipo a sistema real</span><h1>Gestión documental aduanera lista para pilotos pagos.</h1><p>Legajos, clientes, documentos, vencimientos, portal cliente, auditoría y backend server-controlled para pasar de demo a operación real sin inventar integraciones oficiales.</p><a className="primary link-button" href="#app">Entrar a la app</a></div>
+      <aside className="card"><h3>Decisión técnica</h3><p>Next.js + NextAuth + Prisma + Postgres/Neon + R2. Demo local para vender; producción con Server Actions, signed URLs y auditoría.</p></aside>
     </section>
   );
 }

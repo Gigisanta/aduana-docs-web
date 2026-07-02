@@ -139,8 +139,8 @@ export const PLAN_OPTIONS: { id: PlanId; name: string; desc: string }[] = [
 ];
 
 export const READINESS_ITEMS = [
-  "Backend con autenticación real (Supabase Auth, no localStorage)",
-  "Almacenamiento cifrado de documentos (Supabase Storage + RLS)",
+  "Backend con autenticación real (NextAuth v5 + sesiones server-side, no localStorage)",
+  "Almacenamiento privado de documentos (R2/S3 + signed URLs de 5 minutos)",
   "Registro de auditoría por acción/usuario (audit_events)",
   "Backups automáticos y plan de recuperación",
   "Roles y permisos por workspace/cliente (owner/admin/operator/client_viewer)",

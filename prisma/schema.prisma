@@ -1,0 +1,248 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkspaceRole {
+  owner
+  admin
+  operator
+  client_viewer
+  auditor
+}
+
+enum OperationKind {
+  importacion
+  exportacion
+  transito
+  temporal
+}
+
+enum OperationStatus {
+  draft
+  active
+  at_risk
+  complete
+  archived
+}
+
+enum DocumentStatus {
+  missing
+  received
+  approved
+  rejected
+}
+
+enum AuditAction {
+  workspace_created
+  member_added
+  client_created
+  client_updated
+  operation_created
+  operation_updated
+  document_requested
+  document_uploaded
+  document_approved
+  document_downloaded
+  portal_share_created
+  portal_share_accessed
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  memberships   WorkspaceMembership[]
+  auditEvents   AuditLog[]
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  plan      String   @default("starter")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members    WorkspaceMembership[]
+  clients    Client[]
+  operations Operation[]
+  documents  Document[]
+  shares     PortalShare[]
+  audits     AuditLog[]
+}
+
+model WorkspaceMembership {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(operator)
+  createdAt   DateTime      @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model Client {
+  id          String   @id @default(cuid())
+  workspaceId String
+  name        String
+  cuit        String?
+  contact     String?
+  email       String?
+  phone       String?
+  tags        String[] @default([])
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace  Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  operations Operation[]
+
+  @@index([workspaceId])
+  @@index([workspaceId, cuit])
+}
+
+model Operation {
+  id          String          @id @default(cuid())
+  workspaceId String
+  clientId    String
+  code        String
+  kind        OperationKind
+  status      OperationStatus @default(active)
+  lane        String
+  dueDate     DateTime
+  notes       String?         @db.Text
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  documents Document[]
+  deadlines Vencimiento[]
+  shares    PortalShare[]
+  audits    AuditLog[]
+
+  @@unique([workspaceId, code])
+  @@index([workspaceId, clientId])
+  @@index([workspaceId, dueDate])
+}
+
+model Document {
+  id          String         @id @default(cuid())
+  workspaceId String
+  operationId String
+  name        String
+  required    Boolean        @default(true)
+  status      DocumentStatus @default(missing)
+  r2Key       String?
+  mimeType    String?
+  sizeBytes   Int?
+  checksum    String?
+  receivedAt  DateTime?
+  approvedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, operationId])
+  @@index([workspaceId, r2Key])
+}
+
+model Vencimiento {
+  id          String   @id @default(cuid())
+  workspaceId String
+  operationId String
+  title       String
+  dueAt       DateTime
+  doneAt      DateTime?
+  createdAt   DateTime @default(now())
+
+  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, dueAt])
+}
+
+model PortalShare {
+  id          String   @id @default(cuid())
+  workspaceId String
+  operationId String
+  tokenHash   String   @unique
+  expiresAt   DateTime
+  revokedAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  operation Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, operationId])
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  workspaceId String
+  operationId String?
+  actorUserId String?
+  action      AuditAction
+  entityType  String
+  entityId    String
+  metadata    Json        @default("{}")
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime    @default(now())
+
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  actor     User?      @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+  operation Operation? @relation(fields: [operationId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, entityType, entityId])
+}
