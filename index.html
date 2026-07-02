@@ -174,11 +174,20 @@
     .check-grid { display:grid; gap: 8px; margin-top: 12px; }
     .check-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; border:1px solid var(--line-soft); border-radius:14px; padding:10px; background: rgba(0,0,0,.16); }
     .check-row input { width:18px; height:18px; accent-color: var(--gold); }
-    .op { cursor:pointer; }
+    .op { cursor:pointer; align-items: start; }
     .op.active { border-color: rgba(245,200,66,.55); box-shadow: 0 0 0 2px rgba(245,200,66,.12) inset; }
     .risk-score { font-weight:900; color: var(--gold); }
-    .output-box { margin-top: 12px; min-height: 44px; white-space: pre-wrap; overflow:auto; max-height: 180px; }
+    .output-box { margin-top: 12px; min-height: 44px; white-space: pre-wrap; overflow:auto; max-height: 180px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
     .roi-panel { margin-top: 16px; }
+    .stat-box { border-left: 3px solid var(--line-soft); }
+    .stat-box.risk strong { color: var(--red); }
+    .stat-box.missing strong { color: var(--gold); }
+    .stat-box.saved strong { color: var(--green); }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
+    .proof-strip { list-style: none; display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 0; margin: 18px 0 0; }
+    .proof-strip li { display: flex; align-items: center; gap: 7px; color: #d6cec1; font-size: 13.5px; font-weight: 700; }
+    .proof-strip li::before { content: "✓"; color: var(--green); font-weight: 900; }
     .footer { padding: 44px 0 64px; color: var(--muted); border-top: 1px solid var(--line-soft); }
     .sources { font-size: 13px; }
     .sources li { margin: 8px 0; }
@@ -224,9 +233,14 @@
           <div class="eyebrow">Investigación + página web MVP</div>
           <h1>Legajos aduaneros sin perseguir PDFs por WhatsApp.</h1>
           <p class="lead">Una página/prototipo para vender y validar una plataforma de gestión documental aduanera: intake, control de faltantes, vencimientos, trazabilidad y portal de cliente para despachantes, ATA, forwarders e importadores/exportadores.</p>
+          <div class="chip-row" aria-label="Puntos clave del prototipo">
+            <span class="tag blue">Demo funcional, no mockup</span>
+            <span class="tag blue">0 backend · localStorage</span>
+            <span class="tag blue">Export JSON/CSV</span>
+          </div>
           <div class="actions">
-            <a class="btn primary" href="#mercado">Leer investigación</a>
-            <a class="btn" href="#producto">Ver propuesta de producto</a>
+            <a class="btn primary" href="#demo">Probar demo funcional</a>
+            <a class="btn" href="#mercado">Ver investigación</a>
           </div>
           <div class="metrics" aria-label="Indicadores de mercado usados para la hipótesis">
             <div class="metric"><strong>USD 140,5B</strong><span>intercambio argentino de bienes 2024 según INDEC</span></div>
@@ -245,6 +259,8 @@
             </div>
             <span class="status"><span class="dot"></span>Listo para oficializar</span>
           </div>
+          <div class="progress" aria-label="avance 60%" style="margin-top:14px"><span style="width:60%"></span></div>
+          <p class="hint" style="margin-top:6px">3 de 5 documentos listos</p>
           <div class="doc-list">
             <label class="doc"><input type="checkbox" checked><span>Factura comercial validada</span><span class="tag">OK</span></label>
             <label class="doc"><input type="checkbox" checked><span>Packing list + peso bruto/neto</span><span class="tag">OK</span></label>
@@ -404,6 +420,12 @@
             <h2>Un mini sistema operativo de legajos: crear, controlar, exportar y calcular ahorro.</h2>
           </div>
           <p>Hecho en HTML/CSS/JS nativo. Persiste en tu navegador con localStorage. No sube archivos reales ni envía datos a servidores.</p>
+          <ul class="proof-strip" aria-label="Qué valida este demo">
+            <li>Checklist automático por tipo de operación</li>
+            <li>Score de riesgo recalculado en vivo</li>
+            <li>Exportable a JSON/CSV en un clic</li>
+            <li>100% en tu navegador, sin backend</li>
+          </ul>
         </div>
         <div class="app-shell" aria-label="Demo funcional de aplicación AduanaDocs">
           <div class="app-bar">
@@ -413,9 +435,9 @@
           <div class="main">
             <div class="stat-row" aria-label="Indicadores calculados">
               <div class="stat-box"><strong id="stat-total">0</strong><span>operaciones</span></div>
-              <div class="stat-box"><strong id="stat-risk">0</strong><span>en riesgo</span></div>
-              <div class="stat-box"><strong id="stat-missing">0</strong><span>documentos faltantes</span></div>
-              <div class="stat-box"><strong id="stat-saved">0h</strong><span>ahorro estimado/mes</span></div>
+              <div class="stat-box risk"><strong id="stat-risk">0</strong><span>en riesgo</span></div>
+              <div class="stat-box missing"><strong id="stat-missing">0</strong><span>documentos faltantes</span></div>
+              <div class="stat-box saved"><strong id="stat-saved">0h</strong><span>ahorro estimado/mes</span></div>
             </div>
             <div class="function-grid">
               <aside class="card" aria-label="Crear operación">
@@ -468,6 +490,7 @@
                   <div style="flex:1; min-width:220px">
                     <label for="search">Buscar operación, cliente o documento</label>
                     <input id="search" type="search" maxlength="60" placeholder="Ej: IMP, origen, certificado…">
+                    <p class="hint">Filtra por código, cliente, ruta o nombre de documento.</p>
                   </div>
                   <div style="width:190px">
                     <label for="filter">Estado</label>
@@ -491,6 +514,15 @@
             </div>
           </div>
         </div>
+        <article class="card" style="margin-top:18px">
+          <div class="eyebrow">Preguntas frecuentes del demo</div>
+          <div class="mini-grid">
+            <div class="mini"><strong>¿Sube documentos reales?</strong><span>No. Es un prototipo comercial que valida flujo y UX, no reemplaza guarda documental cifrada.</span></div>
+            <div class="mini"><strong>¿Reemplaza a ARCA/VUCE/SIM?</strong><span>No. Es una capa de control previa/posterior; los trámites oficiales siguen en sus sistemas.</span></div>
+            <div class="mini"><strong>¿Sirve para mi volumen?</strong><span>Pensado para estudios de 5–30 personas con muchos legajos activos en simultáneo.</span></div>
+            <div class="mini"><strong>¿Qué pasa si cierro el navegador?</strong><span>Los datos demo quedan guardados en el localStorage de tu propio navegador.</span></div>
+          </div>
+        </article>
         <p class="mobile-note notice" style="margin-top:14px">En mobile, el prototipo se compacta para revisión comercial; la app real debería priorizar subida rápida, cámara/escaneo y aprobaciones.</p>
       </div>
     </section>
@@ -528,7 +560,7 @@
           <article class="card">
             <div class="eyebrow">Pricing a testear</div>
             <div class="mini-grid">
-              <div class="mini"><strong>Starter</strong><span>USD 200–500/mes o equivalente ARS. 1 estudio chico, portal y checklists.</span></div>
+              <div class="mini"><strong>Starter <span class="tag" style="margin-left:6px">Recomendado</span></strong><span>USD 200–500/mes o equivalente ARS. 1 estudio chico, portal y checklists.</span></div>
               <div class="mini"><strong>Operación</strong><span>Fee por legajo/operación para alinear costo con volumen real.</span></div>
               <div class="mini"><strong>Mid-market</strong><span>USD 2k–5k/mes si hay multi-sucursal, roles, auditoría y soporte.</span></div>
               <div class="mini"><strong>Enterprise</strong><span>Integraciones/OCR/API sólo con contrato, no en el MVP.</span></div>
@@ -737,6 +769,7 @@
         <span class="tag ${opStatus(op) === 'risk' ? 'red' : ''}">${pct(op)}% completo</span>
       </div>
       <p class="notice">${escapeHtml(op.notes || 'Sin notas internas.')}</p>
+      <p class="hint">Tocá un documento para marcarlo como recibido y recalcular riesgo.</p>
       <div class="check-grid">${docsFor(op).map(doc => `<label class="check-row"><input type="checkbox" data-doc="${escapeHtml(doc)}" ${op.checked?.[doc] ? 'checked' : ''}><span>${escapeHtml(doc)}</span><span class="tag ${op.checked?.[doc] ? '' : 'red'}">${op.checked?.[doc] ? 'OK' : 'Falta'}</span></label>`).join('')}</div>
       <div class="tool-buttons"><button class="mini-btn danger" type="button" id="delete-op">Eliminar legajo</button></div>`;
       detailEl.querySelectorAll('input[type="checkbox"]').forEach(box => {

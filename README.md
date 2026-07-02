@@ -28,6 +28,11 @@ Landing page + functional prototype for a customs documentation management platf
 - Reset demo data.
 - ROI calculator for sales/pricing conversations.
 
+## UI/UX pass
+
+- Claude Code Sonnet pass upgraded the hero CTA hierarchy, proof chips, demo proof strip, KPI semantics, operation-card scanability, risk badges, export preview readability, pricing emphasis, and FAQ-style buyer objections.
+- Still one static page: no external assets, no dependencies, no backend.
+
 ## Safety note
 
 This prototype does **not** upload or process real customs documents. A production version needs authentication, authorization, encrypted storage, audit logs, backups, and verified legal/compliance review.
