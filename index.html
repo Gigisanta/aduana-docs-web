@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Página de producto e investigación de mercado para una plataforma de gestión de documentación aduanera para despachantes, ATA, forwarders e importadores/exportadores.">
-  <title>AduanaDocs — Gestión documental aduanera</title>
+  <meta name="description" content="App de gestión de documentación aduanera para despachantes, ATA, forwarders e importadores/exportadores: panel, legajos, clientes, vencimientos, documentos y portal de cliente.">
+  <title>AduanaDocs — App de gestión documental aduanera</title>
   <style>
     /* ponytail: one self-contained HTML, no build/deps; upgrade path: split into app + backend only after validating demand with despachantes reales. */
     :root {
@@ -57,7 +57,7 @@
       border-bottom: 1px solid var(--line-soft);
     }
     nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 74px; }
-    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: -.04em; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: -.04em; text-decoration: none; }
     .mark { width: 38px; height: 38px; border-radius: 12px; background: var(--gold); color: #090909; display: grid; place-items: center; box-shadow: 0 0 0 5px rgba(245, 200, 66, .08); }
     .navlinks { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
     .navlinks a { text-decoration: none; color: var(--muted); padding: 9px 11px; border-radius: 999px; font-size: 14px; }
@@ -126,12 +126,13 @@
     .persona-copy { min-height: 210px; }
     .split { display: grid; grid-template-columns: minmax(320px, .9fr) minmax(0, 1.1fr); gap: 22px; align-items: start; }
     .app-shell { background: #05070a; border: 1px solid var(--line-soft); border-radius: 28px; overflow: hidden; box-shadow: var(--shadow); }
-    .app-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #090d13; border-bottom: 1px solid var(--line-soft); }
-    .app-body { display: grid; grid-template-columns: 240px 1fr; min-height: 560px; }
-    .side { border-right: 1px solid var(--line-soft); padding: 14px; background: #070a0f; }
-    .side a { display: flex; justify-content: space-between; gap: 10px; text-decoration: none; color: var(--muted); padding: 11px 12px; border-radius: 14px; margin-bottom: 4px; }
-    .side a.active { background: var(--panel-2); color: var(--ink); }
-    .main { padding: 18px; }
+    .app-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #090d13; border-bottom: 1px solid var(--line-soft); flex-wrap: wrap; gap: 10px; }
+    .app-body { display: grid; grid-template-columns: 220px 1fr; min-height: 620px; align-items: start; }
+    .side { border-right: 1px solid var(--line-soft); padding: 14px; background: #070a0f; display: grid; grid-auto-rows: max-content; gap: 6px; align-self: stretch; }
+    .side a { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-decoration: none; color: #b8c0cc; padding: 11px 12px; border-radius: 14px; border: 1px solid transparent; font-weight: 800; }
+    .side a:hover { color: var(--ink); background: rgba(255,255,255,.045); }
+    .side a.active { background: var(--panel-2); color: var(--ink); border-color: rgba(245,200,66,.24); }
+    .main { padding: 18px; min-width: 0; }
     .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 16px; }
     input, select, textarea { width: 100%; border: 1px solid var(--line-soft); background: #090d13; color: var(--ink); border-radius: 14px; padding: 12px; }
     label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
@@ -158,17 +159,21 @@
     .step { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; padding: 16px; border: 1px solid var(--line-soft); border-radius: 18px; background: rgba(255,255,255,.03); }
     .step::before { counter-increment: step; content: counter(step); width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: #050505; display: grid; place-items: center; font-weight: 900; }
 
-    .function-grid { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr); gap: 14px; }
+    .function-grid { display: grid; grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr); gap: 14px; align-items: start; }
     .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .span-2 { grid-column: 1 / -1; }
     .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
-    .stat-box { border: 1px solid var(--line-soft); border-radius: 16px; background: rgba(255,255,255,.035); padding: 12px; }
+    .stat-box { border: 1px solid var(--line-soft); border-radius: 16px; background: rgba(255,255,255,.035); padding: 12px; border-left: 3px solid var(--line-soft); }
     .stat-box strong { display:block; font-size: 20px; color: var(--ink); }
     .stat-box span { color: var(--muted); font-size: 12px; }
+    .stat-box.risk strong { color: var(--red); }
+    .stat-box.missing strong { color: var(--gold); }
+    .stat-box.saved strong { color: var(--green); }
     .tool-buttons { display:flex; flex-wrap:wrap; gap: 8px; margin-top: 12px; }
-    .mini-btn { border: 1px solid var(--line-soft); background: #0c1119; color: var(--ink); border-radius: 999px; padding: 9px 11px; font-weight: 800; }
+    .mini-btn { border: 1px solid var(--line-soft); background: #0c1119; color: var(--ink); border-radius: 999px; padding: 9px 11px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; }
     .mini-btn.primary { background: var(--gold); color: #080808; border-color: var(--gold); }
     .mini-btn.danger { color: #ffd2d2; border-color: rgba(255,107,107,.32); background: rgba(255,107,107,.09); }
+    .mini-btn[aria-pressed="true"] { background: var(--gold); color: #080808; border-color: var(--gold); }
     .detail-card { border: 1px solid var(--line-soft); border-radius: 20px; padding: 16px; background: rgba(255,255,255,.03); }
     .detail-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-bottom: 12px; }
     .check-grid { display:grid; gap: 8px; margin-top: 12px; }
@@ -179,10 +184,6 @@
     .risk-score { font-weight:900; color: var(--gold); }
     .output-box { margin-top: 12px; min-height: 44px; white-space: pre-wrap; overflow:auto; max-height: 180px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
     .roi-panel { margin-top: 16px; }
-    .stat-box { border-left: 3px solid var(--line-soft); }
-    .stat-box.risk strong { color: var(--red); }
-    .stat-box.missing strong { color: var(--gold); }
-    .stat-box.saved strong { color: var(--green); }
     .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
     .hint { color: var(--muted); font-size: 12px; margin-top: 10px; }
     .proof-strip { list-style: none; display: flex; flex-wrap: wrap; gap: 10px 18px; padding: 0; margin: 18px 0 0; }
@@ -193,6 +194,16 @@
     .sources li { margin: 8px 0; }
     .notice { border: 1px solid rgba(255,255,255,.16); border-radius: 16px; padding: 14px; color: #d9d1c6; background: rgba(255,255,255,.035); }
     .mobile-note { display: none; }
+
+    /* App shell / routing */
+    .app-root { display: none; }
+    body.app-mode .marketing-main { display: none; }
+    body.app-mode .app-root { display: block; }
+    .onboard-card { max-width: 560px; margin: 48px auto; padding: 30px; }
+    .plan-card { border: 1px solid var(--line-soft); border-radius: 16px; padding: 14px; background: rgba(255,255,255,.03); cursor: pointer; }
+    .plan-card[aria-pressed="true"] { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(245,200,66,.16) inset; }
+    .readiness-row { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line-soft); border-radius: 14px; background: rgba(255,255,255,.03); margin-bottom: 8px; }
+    .readiness-row input { width: 18px; height: 18px; accent-color: var(--gold); flex: none; }
 
     @media (max-width: 900px) {
       .hero-grid, .split, .app-body, .research-grid, .function-grid { grid-template-columns: 1fr; }
@@ -210,10 +221,10 @@
 </head>
 <body>
   <a class="skip" href="#contenido">Saltar al contenido</a>
-  <header>
+  <header id="inicio">
     <nav class="wrap" aria-label="Navegación principal">
-      <div class="brand"><span class="mark" aria-hidden="true">AD</span><span>AduanaDocs</span></div>
-      <div class="navlinks">
+      <a class="brand" href="#inicio"><span class="mark" aria-hidden="true">AD</span><span>AduanaDocs</span></a>
+      <div class="navlinks marketing-main">
         <a href="#mercado">Mercado</a>
         <a href="#normativa">Normativa</a>
         <a href="#personas">Usuarios</a>
@@ -222,31 +233,74 @@
         <a href="#competencia">Competencia</a>
         <a href="#go-to-market">GTM</a>
       </div>
-      <a class="btn primary" href="#demo">Ver demo</a>
+      <a class="btn primary" href="#app" id="header-cta">Entrar a la app</a>
     </nav>
   </header>
 
-  <main id="contenido">
+  <div id="app-root" class="app-root">
+    <div class="wrap" style="padding:34px 0 60px">
+      <div id="app-onboarding" class="card onboard-card" hidden>
+        <div class="eyebrow">Acceso al workspace</div>
+        <h2 style="font-size:32px">Entrá a AduanaDocs</h2>
+        <p class="lead" style="margin-top:10px;font-size:16px">Sesión local de demostración: no hay backend ni autenticación real. Es un workspace simulado en tu navegador, pensado para demos comerciales y pilotos.</p>
+        <form id="onboarding-form" class="form-grid" style="margin-top:18px">
+          <div class="span-2">
+            <label for="workspace-name">Nombre del estudio / workspace</label>
+            <input id="workspace-name" maxlength="40" placeholder="Estudio Demo">
+          </div>
+          <button class="btn primary span-2" type="submit">Entrar con demo</button>
+        </form>
+        <p class="hint" style="margin-top:12px">MVP local listo para demos y pilotos. Producción requiere backend cifrado, autenticación real y auditoría.</p>
+      </div>
+
+      <div id="app-shell-inner" hidden>
+        <div class="app-shell" aria-label="Aplicación AduanaDocs">
+          <div class="app-bar">
+            <strong>AduanaDocs · <span id="app-workspace-label">Estudio Demo</span></strong>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <span class="status"><span class="dot"></span><span id="health">Operaciones listas</span></span>
+              <button class="btn" id="logout-btn" type="button">Cerrar sesión</button>
+              <a class="btn" href="#inicio">Ver sitio</a>
+            </div>
+          </div>
+          <div class="app-body">
+            <nav class="side" aria-label="Módulos" id="app-nav">
+              <a href="#app/panel" data-route="panel">Panel</a>
+              <a href="#app/legajos" data-route="legajos">Legajos</a>
+              <a href="#app/clientes" data-route="clientes">Clientes</a>
+              <a href="#app/vencimientos" data-route="vencimientos">Vencimientos</a>
+              <a href="#app/documentos" data-route="documentos">Documentos</a>
+              <a href="#app/portal" data-route="portal">Portal cliente</a>
+              <a href="#app/config" data-route="config">Configuración</a>
+            </nav>
+            <div class="main" id="app-view"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="contenido" class="marketing-main">
     <section class="hero">
       <div class="wrap hero-grid grid">
         <div>
-          <div class="eyebrow">Investigación + página web MVP</div>
+          <div class="eyebrow">App de gestión documental aduanera</div>
           <h1>Legajos aduaneros sin perseguir PDFs por WhatsApp.</h1>
-          <p class="lead">Una página/prototipo para vender y validar una plataforma de gestión documental aduanera: intake, control de faltantes, vencimientos, trazabilidad y portal de cliente para despachantes, ATA, forwarders e importadores/exportadores.</p>
-          <div class="chip-row" aria-label="Puntos clave del prototipo">
-            <span class="tag blue">Demo funcional, no mockup</span>
+          <p class="lead">AduanaDocs es una app operativa para despachantes, ATA, forwarders e importadores/exportadores: legajos, checklist por operación, vencimientos, clientes, documentos y portal de cliente en un solo lugar.</p>
+          <div class="chip-row" aria-label="Puntos clave del producto">
+            <span class="tag blue">App funcional, no mockup</span>
             <span class="tag blue">0 backend · localStorage</span>
             <span class="tag blue">Export JSON/CSV</span>
           </div>
           <div class="actions">
-            <a class="btn primary" href="#demo">Probar demo funcional</a>
+            <a class="btn primary" href="#app">Entrar a la app</a>
             <a class="btn" href="#mercado">Ver investigación</a>
           </div>
           <div class="metrics" aria-label="Indicadores de mercado usados para la hipótesis">
             <div class="metric"><strong>USD 140,5B</strong><span>intercambio argentino de bienes 2024 según INDEC</span></div>
             <div class="metric"><strong>+34,3%</strong><span>importaciones ene-may 2025 vs. año anterior según INDEC</span></div>
             <div class="metric"><strong>8 etapas</strong><span>pre-arribo, SEDI, oficialización, canal, pago, levante y archivo</span></div>
-            <div class="metric"><strong>0 deps</strong><span>HTML estático para validar demanda antes de construir SaaS</span></div>
+            <div class="metric"><strong>0 deps</strong><span>HTML estático, app completa sin backend</span></div>
           </div>
         </div>
 
@@ -268,7 +322,7 @@
             <label class="doc"><input type="checkbox" checked><span>BL / guía aérea / carta de porte</span><span class="tag blue">ATA</span></label>
             <label class="doc"><input type="checkbox"><span>Intervención/VUCE si aplica</span><span class="tag red">Revisar</span></label>
           </div>
-          <p class="notice" style="margin-top:14px">Nota: demo offline. No subir documentación real acá; en producto real exige auth, cifrado, auditoría y backups.</p>
+          <p class="notice" style="margin-top:14px">Nota: capa de control local. No sube documentación real; en producción exige auth, cifrado, auditoría y backups.</p>
         </aside>
       </div>
     </section>
@@ -417,113 +471,29 @@
         <div class="section-head">
           <div>
             <div class="eyebrow">Demo funcional</div>
-            <h2>Un mini sistema operativo de legajos: crear, controlar, exportar y calcular ahorro.</h2>
+            <h2>La app completa vive en “Entrar a la app”. Esto es una vista rápida.</h2>
           </div>
-          <p>Hecho en HTML/CSS/JS nativo. Persiste en tu navegador con localStorage. No sube archivos reales ni envía datos a servidores.</p>
-          <ul class="proof-strip" aria-label="Qué valida este demo">
+          <p>Panel, legajos, clientes, vencimientos, documentos, portal de cliente y configuración: todo clickeable, en tu navegador, con localStorage. Sin subir archivos reales ni enviar datos a servidores.</p>
+          <ul class="proof-strip" aria-label="Qué incluye la app">
+            <li>7 módulos funcionales</li>
             <li>Checklist automático por tipo de operación</li>
             <li>Score de riesgo recalculado en vivo</li>
             <li>Exportable a JSON/CSV en un clic</li>
-            <li>100% en tu navegador, sin backend</li>
           </ul>
-        </div>
-        <div class="app-shell" aria-label="Demo funcional de aplicación AduanaDocs">
-          <div class="app-bar">
-            <strong>AduanaDocs Operaciones</strong>
-            <span class="status"><span class="dot"></span><span id="health">Operaciones listas</span></span>
-          </div>
-          <div class="main">
-            <div class="stat-row" aria-label="Indicadores calculados">
-              <div class="stat-box"><strong id="stat-total">0</strong><span>operaciones</span></div>
-              <div class="stat-box risk"><strong id="stat-risk">0</strong><span>en riesgo</span></div>
-              <div class="stat-box missing"><strong id="stat-missing">0</strong><span>documentos faltantes</span></div>
-              <div class="stat-box saved"><strong id="stat-saved">0h</strong><span>ahorro estimado/mes</span></div>
-            </div>
-            <div class="function-grid">
-              <aside class="card" aria-label="Crear operación">
-                <h3>Nueva operación</h3>
-                <p>Creá un legajo demo con checklist automático según tipo de operación.</p>
-                <form id="op-form" class="form-grid">
-                  <div>
-                    <label for="op-id">Código</label>
-                    <input id="op-id" maxlength="24" required placeholder="IMP-2026-0201">
-                  </div>
-                  <div>
-                    <label for="op-kind">Tipo</label>
-                    <select id="op-kind">
-                      <option value="importacion">Importación</option>
-                      <option value="exportacion">Exportación</option>
-                      <option value="transito">Tránsito</option>
-                      <option value="temporal">Temporal</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="op-client">Cliente</label>
-                    <input id="op-client" maxlength="48" required placeholder="Metalúrgica Sur">
-                  </div>
-                  <div>
-                    <label for="op-due">Vencimiento / ETA</label>
-                    <input id="op-due" type="date" required>
-                  </div>
-                  <div class="span-2">
-                    <label for="op-lane">Mercadería / ruta</label>
-                    <input id="op-lane" maxlength="80" placeholder="Autopartes · China → Buenos Aires">
-                  </div>
-                  <div class="span-2">
-                    <label for="op-notes">Notas internas</label>
-                    <textarea id="op-notes" rows="3" maxlength="220" placeholder="Ej: revisar certificado de origen y permiso VUCE"></textarea>
-                  </div>
-                  <button class="btn primary span-2" type="submit">Crear legajo</button>
-                </form>
-                <div class="roi-panel">
-                  <h3>Calculadora ROI rápida</h3>
-                  <div class="form-grid">
-                    <div><label for="roi-hours">Horas/semana persiguiendo docs</label><input id="roi-hours" type="number" min="0" max="80" value="8"></div>
-                    <div><label for="roi-cost">Costo hora equipo USD</label><input id="roi-cost" type="number" min="0" max="200" value="18"></div>
-                  </div>
-                  <p class="notice" id="roi-output" style="margin-top:10px"></p>
-                </div>
-              </aside>
-
-              <section class="card" aria-label="Operaciones y detalle">
-                <div class="toolbar">
-                  <div style="flex:1; min-width:220px">
-                    <label for="search">Buscar operación, cliente o documento</label>
-                    <input id="search" type="search" maxlength="60" placeholder="Ej: IMP, origen, certificado…">
-                    <p class="hint">Filtra por código, cliente, ruta o nombre de documento.</p>
-                  </div>
-                  <div style="width:190px">
-                    <label for="filter">Estado</label>
-                    <select id="filter">
-                      <option value="all">Todos</option>
-                      <option value="risk">En riesgo</option>
-                      <option value="ready">Listos</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="ops" id="ops"></div>
-                <div id="detail" class="detail-card" style="margin-top:14px"></div>
-                <div class="tool-buttons">
-                  <button class="mini-btn primary" id="export-json" type="button">Exportar JSON</button>
-                  <button class="mini-btn" id="export-csv" type="button">Exportar CSV</button>
-                  <button class="mini-btn" id="copy-summary" type="button">Copiar resumen</button>
-                  <button class="mini-btn danger" id="reset-demo" type="button">Reset demo</button>
-                </div>
-                <pre id="demo-output" class="notice output-box" aria-live="polite">Listo para operar.</pre>
-              </section>
-            </div>
+          <div class="actions">
+            <a class="btn primary" href="#app">Entrar a la app completa</a>
           </div>
         </div>
-        <article class="card" style="margin-top:18px">
-          <div class="eyebrow">Preguntas frecuentes del demo</div>
+        <article class="card">
+          <div class="eyebrow">Preguntas frecuentes de la app</div>
           <div class="mini-grid">
-            <div class="mini"><strong>¿Sube documentos reales?</strong><span>No. Es un prototipo comercial que valida flujo y UX, no reemplaza guarda documental cifrada.</span></div>
+            <div class="mini"><strong>¿Sube documentos reales?</strong><span>No. Es un producto local que valida flujo y UX, no reemplaza guarda documental cifrada.</span></div>
             <div class="mini"><strong>¿Reemplaza a ARCA/VUCE/SIM?</strong><span>No. Es una capa de control previa/posterior; los trámites oficiales siguen en sus sistemas.</span></div>
             <div class="mini"><strong>¿Sirve para mi volumen?</strong><span>Pensado para estudios de 5–30 personas con muchos legajos activos en simultáneo.</span></div>
-            <div class="mini"><strong>¿Qué pasa si cierro el navegador?</strong><span>Los datos demo quedan guardados en el localStorage de tu propio navegador.</span></div>
+            <div class="mini"><strong>¿Qué pasa si cierro el navegador?</strong><span>Los datos quedan guardados en el localStorage de tu propio navegador.</span></div>
           </div>
         </article>
-        <p class="mobile-note notice" style="margin-top:14px">En mobile, el prototipo se compacta para revisión comercial; la app real debería priorizar subida rápida, cámara/escaneo y aprobaciones.</p>
+        <p class="mobile-note notice" style="margin-top:14px">En mobile, la app se compacta para revisión comercial; una versión de producción debería priorizar subida rápida, cámara/escaneo y aprobaciones.</p>
       </div>
     </section>
 
@@ -574,12 +544,12 @@
       <div class="wrap split">
         <div>
           <div class="eyebrow">Go-to-market</div>
-          <h2>Validación de bajo costo antes de construir SaaS.</h2>
-          <p class="lead">PONYTAIL: primero vender un flujo manual asistido + portal liviano. Construir backend, OCR e integraciones sólo cuando haya señal comercial.</p>
+          <h2>Validación de bajo costo antes de construir backend.</h2>
+          <p class="lead">PONYTAIL: primero vender la app local + portal liviano. Construir backend, OCR e integraciones sólo cuando haya señal comercial.</p>
         </div>
         <div class="timeline">
           <div class="step"><div><h3>Semana 1: entrevistas</h3><p>10 despachantes/ATA/forwarders. Preguntas: “¿qué documento se pierde más?”, “¿cuánto tiempo se va en perseguir faltantes?”, “¿qué cliente pagaría por visibilidad?”.</p></div></div>
-          <div class="step"><div><h3>Semana 2: concierge MVP</h3><p>Usar esta página + una demo de checklist. Operar 3 legajos reales como servicio manual, sin automatización cara.</p></div></div>
+          <div class="step"><div><h3>Semana 2: concierge MVP</h3><p>Usar esta app + demo en vivo. Operar 3 legajos reales como servicio manual, sin automatización cara.</p></div></div>
           <div class="step"><div><h3>Semana 3: pricing test</h3><p>Testear Starter USD 200–500/mes equivalente ARS + fee por legajo. Contraoferta: “te lo opero concierge y medimos horas ahorradas”.</p></div></div>
           <div class="step"><div><h3>Semana 4: build mínimo</h3><p>Sólo si hay pagos/carta de intención: auth, roles, almacenamiento cifrado, auditoría, backups, exportables y flujo de onboarding.</p></div></div>
           <div class="step"><div><h3>Semana 5: wedge técnico</h3><p>Elegir un solo wedge: intake WhatsApp/mail, validador documental, portal cliente o tablero de vencimientos. No construir todo junto.</p></div></div>
@@ -594,19 +564,19 @@
           <p class="lead"><strong>“Tu estudio no necesita otro Excel. Necesita saber, por operación, qué falta, quién lo debe, cuándo vence y qué evidencia queda.”</strong></p>
         </div>
         <div class="card">
-          <h3>Atajos intencionales del prototipo</h3>
+          <h3>Atajos intencionales del producto</h3>
           <ul>
-            <li>Sin login ni subida real de archivos: por seguridad.</li>
+            <li>Login local de demo, no autenticación real: por seguridad.</li>
             <li>Sin prometer integración oficial con ARCA/VUCE/SITA: validar disponibilidad legal/técnica primero.</li>
             <li>Sin framework: una página abre en cualquier navegador y sirve para venta/entrevistas.</li>
-            <li>Próximo paso real: convertir esta demo en flujo clickable con 3 casos de uso y formulario de lead.</li>
+            <li>Próximo paso real: backend cifrado, auth, auditoría y piloto pago con 1-2 estudios.</li>
           </ul>
         </div>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="footer marketing-main">
     <div class="wrap sources">
       <strong>Fuentes usadas para la hipótesis:</strong>
       <ol>
@@ -623,6 +593,7 @@
   </footer>
 
   <script>
+    // ---------- Marketing: persona tabs ----------
     const personas = {
       despachante: {
         title: 'Despachante de aduana',
@@ -641,7 +612,6 @@
         bullets: ['Dolor: no sabe qué falta ni por qué se frena la operación.', 'Compra indirecta: exige portal al despachante o paga visibilidad premium.', 'Mensaje: “estado claro, documentos solicitados y aprobaciones en un solo lugar”.']
       }
     };
-
     const personaCopy = document.getElementById('persona-copy');
     function renderPersona(key) {
       const p = personas[key];
@@ -656,36 +626,88 @@
     });
     renderPersona('despachante');
 
+    // ---------- Shared data helpers ----------
+    function escapeHtml(str='') {
+      return String(str).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    }
+    function slugify(str) {
+      return String(str).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'cliente';
+    }
+
     const docTemplates = {
       importacion: ['Factura comercial', 'Packing list', 'BL/AWB/CRT', 'SEDI', 'Certificado de origen', 'Permiso VUCE si aplica', 'Comprobante VEP/pago'],
       exportacion: ['Factura E', 'Packing list', 'EC18 / permiso de embarque', 'Certificado sanitario/origen si aplica', 'Documento de transporte', 'Ingreso zona primaria'],
       transito: ['Documento de transporte', 'MANI SIM', 'MIC/DTA o ruta ISTA', 'Seguro', 'Carta de instrucciones'],
       temporal: ['Factura proforma/comercial', 'Packing list', 'Garantía / caución', 'Destinación temporal', 'Vencimiento de reexportación', 'Permiso sectorial si aplica']
     };
+    const kindLabels = { importacion: 'Importación', exportacion: 'Exportación', transito: 'Tránsito', temporal: 'Temporal' };
     const seedOperations = [
       { id: 'IMP-2026-0146', client: 'Metalúrgica Sur', kind: 'importacion', lane: 'Autopartes · China → Buenos Aires', due: '2026-07-09', notes: 'Revisar certificado de origen antes de oficializar.', checked: {'Factura comercial': true, 'Packing list': true, 'BL/AWB/CRT': true, 'SEDI': true, 'Certificado de origen': false, 'Permiso VUCE si aplica': false, 'Comprobante VEP/pago': true} },
       { id: 'EXP-2026-0092', client: 'Bodega Alto Valle', kind: 'exportacion', lane: 'Vino · Argentina → Brasil', due: '2026-07-06', notes: 'Cliente pide visibilidad del certificado sanitario.', checked: {'Factura E': true, 'Packing list': true, 'EC18 / permiso de embarque': false, 'Certificado sanitario/origen si aplica': false, 'Documento de transporte': true, 'Ingreso zona primaria': false} },
       { id: 'TRA-2026-0031', client: 'Andes Cargo', kind: 'transito', lane: 'Chile → Paraguay vía Argentina', due: '2026-07-02', notes: 'Validar ruta y seguro antes de liberar.', checked: {'Documento de transporte': true, 'MANI SIM': true, 'MIC/DTA o ruta ISTA': false, 'Seguro': false, 'Carta de instrucciones': true} }
     ];
-    const storageKey = 'aduanaDocsOpsV2';
-    let operations = loadOps();
-    let selectedId = operations[0]?.id || null;
 
-    const opsEl = document.getElementById('ops');
-    const detailEl = document.getElementById('detail');
-    const search = document.getElementById('search');
-    const filter = document.getElementById('filter');
-    const output = document.getElementById('demo-output');
+    const opsKey = 'aduanaDocsOpsV2';
+    const clientsKey = 'aduanaDocsClientsV1';
+    const sessionKey = 'aduanaDocsSessionV1';
+    const settingsKey = 'aduanaDocsSettingsV1';
+    const roiKey = 'aduanaDocsRoiV1';
 
     function loadOps() {
       try {
-        const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
+        const saved = JSON.parse(localStorage.getItem(opsKey) || 'null');
         return Array.isArray(saved) && saved.length ? saved : structuredClone(seedOperations);
-      } catch (_) {
-        return structuredClone(seedOperations);
+      } catch (_) { return structuredClone(seedOperations); }
+    }
+    function saveOps() { localStorage.setItem(opsKey, JSON.stringify(operations)); }
+
+    function seedClientsFromOps() {
+      const names = [...new Set(seedOperations.map(op => op.client))];
+      return names.map(name => ({ id: slugify(name), name, contact: '', email: '', phone: '', notes: '' }));
+    }
+    function loadClients() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(clientsKey) || 'null');
+        return Array.isArray(saved) && saved.length ? saved : seedClientsFromOps();
+      } catch (_) { return seedClientsFromOps(); }
+    }
+    function saveClients() { localStorage.setItem(clientsKey, JSON.stringify(clients)); }
+    function ensureClient(name) {
+      if (!name) return;
+      if (!clients.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+        clients.push({ id: slugify(name), name, contact: '', email: '', phone: '', notes: '' });
+        saveClients();
       }
     }
-    function saveOps() { localStorage.setItem(storageKey, JSON.stringify(operations)); }
+
+    function loadSession() {
+      try { return JSON.parse(localStorage.getItem(sessionKey) || 'null'); }
+      catch (_) { return null; }
+    }
+    function saveSession(session) { localStorage.setItem(sessionKey, JSON.stringify(session)); }
+    function clearSession() { localStorage.removeItem(sessionKey); }
+
+    const defaultSettings = { workspace: 'Estudio Demo', plan: 'starter', readiness: {} };
+    function loadSettings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(settingsKey) || 'null');
+        return saved && typeof saved === 'object' ? { ...defaultSettings, ...saved } : { ...defaultSettings };
+      } catch (_) { return { ...defaultSettings }; }
+    }
+    function saveSettings() { localStorage.setItem(settingsKey, JSON.stringify(settings)); }
+
+    function loadRoi() {
+      try { return JSON.parse(localStorage.getItem(roiKey) || 'null') || { hours: 8, cost: 18 }; }
+      catch (_) { return { hours: 8, cost: 18 }; }
+    }
+    function saveRoi() { localStorage.setItem(roiKey, JSON.stringify(roi)); }
+
+    let operations = loadOps();
+    let clients = loadClients();
+    let settings = loadSettings();
+    let roi = loadRoi();
+    let selectedId = operations[0]?.id || null;
+
     function docsFor(op) { return docTemplates[op.kind] || docTemplates.importacion; }
     function missingDocs(op) { return docsFor(op).filter(doc => !op.checked?.[doc]); }
     function pct(op) { return Math.round(((docsFor(op).length - missingDocs(op).length) / docsFor(op).length) * 100); }
@@ -709,141 +731,614 @@
       if (d === 0) return 'vence hoy';
       return `vence en ${d} día(s)`;
     }
-    function escapeHtml(str='') {
-      return String(str).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
+    function exportRows() {
+      return operations.map(op => ({ id: op.id, cliente: op.client, tipo: op.kind, ruta: op.lane, vencimiento: op.due, avance: `${pct(op)}%`, riesgo: riskScore(op), faltantes: missingDocs(op).join(' | ') }));
     }
-    function showOutput(text) { output.textContent = text; }
+    function toCsv(rows) {
+      if (!rows.length) return '';
+      const headers = Object.keys(rows[0]);
+      return [headers.join(','), ...rows.map(row => headers.map(h => `"${String(row[h]).replaceAll('"', '""')}"`).join(','))].join('\n');
+    }
 
-    function renderStats() {
-      const total = operations.length;
-      const risk = operations.filter(op => opStatus(op) === 'risk').length;
+    // ---------- App routing ----------
+    const appView = document.getElementById('app-view');
+    const headerCta = document.getElementById('header-cta');
+    const onboardingBox = document.getElementById('app-onboarding');
+    const shellBox = document.getElementById('app-shell-inner');
+
+    function currentRoute() {
+      const h = location.hash;
+      if (!h.startsWith('#app')) return null;
+      return h.split('/')[1] || 'panel';
+    }
+
+    function applyRoute() {
+      const route = currentRoute();
+      if (!route) {
+        document.body.classList.remove('app-mode');
+        headerCta.textContent = 'Entrar a la app';
+        headerCta.href = '#app';
+        return;
+      }
+      document.body.classList.add('app-mode');
+      headerCta.textContent = 'Ver sitio';
+      headerCta.href = '#inicio';
+      const session = loadSession();
+      onboardingBox.hidden = !!session;
+      shellBox.hidden = !session;
+      if (!session) return;
+      document.getElementById('app-workspace-label').textContent = session.workspace;
+      document.querySelectorAll('#app-nav a').forEach(a => a.classList.toggle('active', a.dataset.route === route));
+      renderAppView(route);
+    }
+
+    function renderAppView(route) {
+      const renderers = {
+        panel: renderPanelView,
+        legajos: renderLegajosView,
+        clientes: renderClientesView,
+        vencimientos: renderVencimientosView,
+        documentos: renderDocumentosView,
+        portal: renderPortalView,
+        config: renderConfigView
+      };
+      (renderers[route] || renderPanelView)();
+    }
+
+    document.getElementById('onboarding-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('workspace-name').value.trim() || 'Estudio Demo';
+      settings.workspace = name;
+      saveSettings();
+      saveSession({ workspace: name, enteredAt: new Date().toISOString().slice(0, 10) });
+      location.hash = '#app/panel';
+      applyRoute();
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      clearSession();
+      location.hash = '#app';
+      applyRoute();
+    });
+    window.addEventListener('hashchange', applyRoute);
+
+    // ---------- Panel ----------
+    function renderPanelView() {
+      const risk = operations.filter(op => opStatus(op) === 'risk');
       const missing = operations.reduce((sum, op) => sum + missingDocs(op).length, 0);
-      const hours = Number(document.getElementById('roi-hours').value || 0);
-      document.getElementById('stat-total').textContent = total;
-      document.getElementById('stat-risk').textContent = risk;
-      document.getElementById('stat-missing').textContent = missing;
-      document.getElementById('stat-saved').textContent = `${Math.round(hours * 4 * .45)}h`;
-      document.getElementById('health').textContent = `${total} operaciones · ${risk} en riesgo`;
-    }
-    function renderRoi() {
-      const hours = Number(document.getElementById('roi-hours').value || 0);
-      const cost = Number(document.getElementById('roi-cost').value || 0);
-      const savedHours = hours * 4 * .45;
-      const savedUsd = Math.round(savedHours * cost);
-      document.getElementById('roi-output').textContent = `Hipótesis: si AduanaDocs reduce 45% del seguimiento documental, ahorra ${Math.round(savedHours)}h/mes ≈ USD ${savedUsd}/mes. Esto sirve para testear precio, no es promesa contractual.`;
-      renderStats();
-    }
-    function renderOps() {
-      const q = search.value.trim().toLowerCase();
-      const f = filter.value;
-      const rows = operations.filter(op => {
-        const hay = `${op.id} ${op.client} ${op.lane} ${docsFor(op).join(' ')} ${op.notes}`.toLowerCase();
-        return (!q || hay.includes(q)) && (f === 'all' || opStatus(op) === f);
-      });
-      if (!rows.some(op => op.id === selectedId)) selectedId = rows[0]?.id || operations[0]?.id || null;
-      opsEl.innerHTML = rows.map(op => {
-        const status = opStatus(op);
-        return `<article class="op ${op.id === selectedId ? 'active' : ''}" data-id="${escapeHtml(op.id)}" tabindex="0" role="button" aria-label="Abrir ${escapeHtml(op.id)}">
-          <div>
-            <strong>${escapeHtml(op.id)} · ${escapeHtml(op.client)}</strong><br>
-            <small>${escapeHtml(op.lane)} · ${fmtDue(op)} · riesgo <span class="risk-score">${riskScore(op)}</span>/100</small>
-            <div class="progress" aria-label="avance ${pct(op)}%"><span style="width:${pct(op)}%"></span></div>
-            <small>${missingDocs(op).length ? `Faltan: ${escapeHtml(missingDocs(op).join(' · '))}` : 'Legajo completo'}</small>
+      const upcoming = [...operations].sort((a, b) => daysUntil(a.due) - daysUntil(b.due)).slice(0, 5);
+      appView.innerHTML = `
+        <h2 style="font-size:26px">Panel operativo</h2>
+        <p class="hint">Resumen en vivo de legajos, riesgo y vencimientos del workspace.</p>
+        <div class="stat-row">
+          <div class="stat-box"><strong>${operations.length}</strong><span>legajos activos</span></div>
+          <div class="stat-box risk"><strong>${risk.length}</strong><span>en riesgo</span></div>
+          <div class="stat-box missing"><strong>${missing}</strong><span>documentos faltantes</span></div>
+          <div class="stat-box saved"><strong>${Math.round(roi.hours * 4 * .45)}h</strong><span>ahorro estimado/mes</span></div>
+        </div>
+        <div class="function-grid" style="margin-top:6px">
+          <div class="card">
+            <h3>Cola de riesgo</h3>
+            ${risk.length ? `<div class="risk-list">${risk.slice(0, 6).map(op => `<div class="risk-item">${escapeHtml(op.id)} · ${escapeHtml(op.client)} — riesgo ${riskScore(op)}/100, faltan ${missingDocs(op).length}</div>`).join('')}</div>` : '<p class="notice">Sin legajos en riesgo ahora mismo.</p>'}
           </div>
-          <span class="tag ${status === 'risk' ? 'red' : ''}">${status === 'risk' ? 'En riesgo' : 'Listo'}</span>
-        </article>`;
-      }).join('') || '<p class="notice">Sin resultados. Probá otro filtro.</p>';
-      document.querySelectorAll('.op').forEach(el => {
-        const open = () => { selectedId = el.dataset.id; renderOps(); };
-        el.addEventListener('click', open);
-        el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
-      });
-      renderDetail();
-      renderStats();
+          <div class="card">
+            <h3>Próximos vencimientos</h3>
+            <div class="ops">${upcoming.length ? upcoming.map(op => `<article class="op" style="cursor:default"><div><strong>${escapeHtml(op.id)}</strong><br><small>${escapeHtml(op.client)} · ${fmtDue(op)}</small></div><span class="tag ${opStatus(op) === 'risk' ? 'red' : ''}">${opStatus(op) === 'risk' ? 'Riesgo' : 'OK'}</span></article>`).join('') : '<p class="notice">Sin operaciones cargadas.</p>'}</div>
+          </div>
+        </div>
+        <div class="tool-buttons" style="margin-top:6px">
+          <a class="mini-btn primary" href="#app/legajos">+ Nuevo legajo</a>
+          <a class="mini-btn" href="#app/clientes">Ver clientes</a>
+          <a class="mini-btn" href="#app/vencimientos">Ver vencimientos</a>
+          <a class="mini-btn" href="#app/portal">Portal cliente</a>
+        </div>
+      `;
     }
-    function renderDetail() {
-      const op = operations.find(item => item.id === selectedId);
-      if (!op) { detailEl.innerHTML = '<p class="notice">Seleccioná o creá una operación.</p>'; return; }
-      detailEl.innerHTML = `<div class="detail-head">
-        <div><h3>${escapeHtml(op.id)} · ${escapeHtml(op.client)}</h3><p>${escapeHtml(op.kind)} · ${escapeHtml(op.lane)} · ${fmtDue(op)}</p></div>
-        <span class="tag ${opStatus(op) === 'risk' ? 'red' : ''}">${pct(op)}% completo</span>
-      </div>
-      <p class="notice">${escapeHtml(op.notes || 'Sin notas internas.')}</p>
-      <p class="hint">Tocá un documento para marcarlo como recibido y recalcular riesgo.</p>
-      <div class="check-grid">${docsFor(op).map(doc => `<label class="check-row"><input type="checkbox" data-doc="${escapeHtml(doc)}" ${op.checked?.[doc] ? 'checked' : ''}><span>${escapeHtml(doc)}</span><span class="tag ${op.checked?.[doc] ? '' : 'red'}">${op.checked?.[doc] ? 'OK' : 'Falta'}</span></label>`).join('')}</div>
-      <div class="tool-buttons"><button class="mini-btn danger" type="button" id="delete-op">Eliminar legajo</button></div>`;
-      detailEl.querySelectorAll('input[type="checkbox"]').forEach(box => {
-        box.addEventListener('change', () => {
-          op.checked[box.dataset.doc] = box.checked;
+
+    // ---------- Legajos ----------
+    function renderLegajosView() {
+      appView.innerHTML = `
+        <div class="function-grid">
+          <aside class="card" aria-label="Crear operación">
+            <h3>Nueva operación</h3>
+            <p>Creá un legajo con checklist automático según tipo de operación.</p>
+            <form id="op-form" class="form-grid">
+              <div>
+                <label for="op-id">Código</label>
+                <input id="op-id" maxlength="24" required placeholder="IMP-2026-0201">
+              </div>
+              <div>
+                <label for="op-kind">Tipo</label>
+                <select id="op-kind">
+                  <option value="importacion">Importación</option>
+                  <option value="exportacion">Exportación</option>
+                  <option value="transito">Tránsito</option>
+                  <option value="temporal">Temporal</option>
+                </select>
+              </div>
+              <div>
+                <label for="op-client">Cliente</label>
+                <input id="op-client" maxlength="48" required placeholder="Metalúrgica Sur" list="client-names">
+                <datalist id="client-names">${clients.map(c => `<option value="${escapeHtml(c.name)}">`).join('')}</datalist>
+              </div>
+              <div>
+                <label for="op-due">Vencimiento / ETA</label>
+                <input id="op-due" type="date" required>
+              </div>
+              <div class="span-2">
+                <label for="op-lane">Mercadería / ruta</label>
+                <input id="op-lane" maxlength="80" placeholder="Autopartes · China → Buenos Aires">
+              </div>
+              <div class="span-2">
+                <label for="op-notes">Notas internas</label>
+                <textarea id="op-notes" rows="3" maxlength="220" placeholder="Ej: revisar certificado de origen y permiso VUCE"></textarea>
+              </div>
+              <button class="btn primary span-2" type="submit">Crear legajo</button>
+            </form>
+            <div class="roi-panel">
+              <h3>Calculadora ROI rápida</h3>
+              <div class="form-grid">
+                <div><label for="roi-hours">Horas/semana persiguiendo docs</label><input id="roi-hours" type="number" min="0" max="80" value="${roi.hours}"></div>
+                <div><label for="roi-cost">Costo hora equipo USD</label><input id="roi-cost" type="number" min="0" max="200" value="${roi.cost}"></div>
+              </div>
+              <p class="notice" id="roi-output" style="margin-top:10px"></p>
+            </div>
+          </aside>
+
+          <section class="card" aria-label="Operaciones y detalle">
+            <div class="toolbar">
+              <div style="flex:1; min-width:220px">
+                <label for="search">Buscar operación, cliente o documento</label>
+                <input id="search" type="search" maxlength="60" placeholder="Ej: IMP, origen, certificado…">
+                <p class="hint">Filtra por código, cliente, ruta o nombre de documento.</p>
+              </div>
+              <div style="width:190px">
+                <label for="filter">Estado</label>
+                <select id="filter">
+                  <option value="all">Todos</option>
+                  <option value="risk">En riesgo</option>
+                  <option value="ready">Listos</option>
+                </select>
+              </div>
+            </div>
+            <div class="ops" id="ops"></div>
+            <div id="detail" class="detail-card" style="margin-top:14px"></div>
+            <div class="tool-buttons">
+              <button class="mini-btn primary" id="export-json" type="button">Exportar JSON</button>
+              <button class="mini-btn" id="export-csv" type="button">Exportar CSV</button>
+              <button class="mini-btn" id="copy-summary" type="button">Copiar resumen</button>
+              <button class="mini-btn danger" id="reset-demo" type="button">Reset demo</button>
+            </div>
+            <pre id="demo-output" class="notice output-box" aria-live="polite">Listo para operar.</pre>
+          </section>
+        </div>
+      `;
+
+      const opsEl = document.getElementById('ops');
+      const detailEl = document.getElementById('detail');
+      const search = document.getElementById('search');
+      const filter = document.getElementById('filter');
+      const output = document.getElementById('demo-output');
+      const health = document.getElementById('health');
+
+      function showOutput(text) { output.textContent = text; }
+      function refreshHealth() { health.textContent = `${operations.length} operaciones · ${operations.filter(op => opStatus(op) === 'risk').length} en riesgo`; }
+
+      function renderRoiPanel() {
+        roi.hours = Number(document.getElementById('roi-hours').value || 0);
+        roi.cost = Number(document.getElementById('roi-cost').value || 0);
+        saveRoi();
+        const savedHours = roi.hours * 4 * .45;
+        const savedUsd = Math.round(savedHours * roi.cost);
+        document.getElementById('roi-output').textContent = `Hipótesis: si AduanaDocs reduce 45% del seguimiento documental, ahorra ${Math.round(savedHours)}h/mes ≈ USD ${savedUsd}/mes. Esto sirve para testear precio, no es promesa contractual.`;
+      }
+
+      function renderOpsList() {
+        const q = search.value.trim().toLowerCase();
+        const f = filter.value;
+        const rows = operations.filter(op => {
+          const hay = `${op.id} ${op.client} ${op.lane} ${docsFor(op).join(' ')} ${op.notes}`.toLowerCase();
+          return (!q || hay.includes(q)) && (f === 'all' || opStatus(op) === f);
+        });
+        if (!rows.some(op => op.id === selectedId)) selectedId = rows[0]?.id || operations[0]?.id || null;
+        opsEl.innerHTML = rows.map(op => {
+          const status = opStatus(op);
+          return `<article class="op ${op.id === selectedId ? 'active' : ''}" data-id="${escapeHtml(op.id)}" tabindex="0" role="button" aria-label="Abrir ${escapeHtml(op.id)}">
+            <div>
+              <strong>${escapeHtml(op.id)} · ${escapeHtml(op.client)}</strong><br>
+              <small>${escapeHtml(op.lane)} · ${fmtDue(op)} · riesgo <span class="risk-score">${riskScore(op)}</span>/100</small>
+              <div class="progress" aria-label="avance ${pct(op)}%"><span style="width:${pct(op)}%"></span></div>
+              <small>${missingDocs(op).length ? `Faltan: ${escapeHtml(missingDocs(op).join(' · '))}` : 'Legajo completo'}</small>
+            </div>
+            <span class="tag ${status === 'risk' ? 'red' : ''}">${status === 'risk' ? 'En riesgo' : 'Listo'}</span>
+          </article>`;
+        }).join('') || '<p class="notice">Sin resultados. Probá otro filtro.</p>';
+        opsEl.querySelectorAll('.op').forEach(el => {
+          const open = () => { selectedId = el.dataset.id; renderOpsList(); };
+          el.addEventListener('click', open);
+          el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+        });
+        renderDetail();
+        refreshHealth();
+      }
+
+      function renderDetail() {
+        const op = operations.find(item => item.id === selectedId);
+        if (!op) { detailEl.innerHTML = '<p class="notice">Seleccioná o creá una operación.</p>'; return; }
+        detailEl.innerHTML = `<div class="detail-head">
+          <div><h3>${escapeHtml(op.id)} · ${escapeHtml(op.client)}</h3><p>${escapeHtml(kindLabels[op.kind] || op.kind)} · ${escapeHtml(op.lane)} · ${fmtDue(op)}</p></div>
+          <span class="tag ${opStatus(op) === 'risk' ? 'red' : ''}">${pct(op)}% completo</span>
+        </div>
+        <p class="notice">${escapeHtml(op.notes || 'Sin notas internas.')}</p>
+        <p class="hint">Tocá un documento para marcarlo como recibido y recalcular riesgo.</p>
+        <div class="check-grid">${docsFor(op).map(doc => `<label class="check-row"><input type="checkbox" data-doc="${escapeHtml(doc)}" ${op.checked?.[doc] ? 'checked' : ''}><span>${escapeHtml(doc)}</span><span class="tag ${op.checked?.[doc] ? '' : 'red'}">${op.checked?.[doc] ? 'OK' : 'Falta'}</span></label>`).join('')}</div>
+        <div class="tool-buttons"><button class="mini-btn danger" type="button" id="delete-op">Eliminar legajo</button></div>`;
+        detailEl.querySelectorAll('input[type="checkbox"]').forEach(box => {
+          box.addEventListener('change', () => {
+            op.checked[box.dataset.doc] = box.checked;
+            saveOps();
+            renderOpsList();
+          });
+        });
+        detailEl.querySelector('#delete-op').addEventListener('click', () => {
+          operations = operations.filter(item => item.id !== op.id);
+          selectedId = operations[0]?.id || null;
           saveOps();
-          renderOps();
+          renderOpsList();
+          showOutput(`Legajo eliminado: ${op.id}`);
+        });
+      }
+
+      document.getElementById('op-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const id = document.getElementById('op-id').value.trim().toUpperCase();
+        if (!id) return;
+        if (operations.some(op => op.id === id)) { showOutput(`Ya existe el legajo ${id}.`); return; }
+        const kind = document.getElementById('op-kind').value;
+        const client = document.getElementById('op-client').value.trim();
+        const checked = Object.fromEntries(docsFor({ kind }).map(doc => [doc, false]));
+        const op = {
+          id, kind, client,
+          lane: document.getElementById('op-lane').value.trim() || 'Ruta sin definir',
+          due: document.getElementById('op-due').value,
+          notes: document.getElementById('op-notes').value.trim(),
+          checked
+        };
+        operations.unshift(op);
+        ensureClient(client);
+        selectedId = id;
+        saveOps();
+        e.target.reset();
+        setDefaultDue();
+        renderOpsList();
+        showOutput(`Legajo creado: ${id}. Checklist generado: ${docsFor(op).join(', ')}`);
+      });
+
+      document.getElementById('export-json').addEventListener('click', () => showOutput(JSON.stringify(exportRows(), null, 2)));
+      document.getElementById('export-csv').addEventListener('click', () => showOutput(toCsv(exportRows())));
+      document.getElementById('copy-summary').addEventListener('click', async () => {
+        const summary = exportRows().map(r => `${r.id} · ${r.cliente}: ${r.avance}, riesgo ${r.riesgo}/100, faltan ${r.faltantes || 'nada'}`).join('\n');
+        try { await navigator.clipboard.writeText(summary); showOutput('Resumen copiado al portapapeles:\n' + summary); }
+        catch (_) { showOutput(summary); }
+      });
+      document.getElementById('reset-demo').addEventListener('click', () => {
+        operations = structuredClone(seedOperations);
+        clients = seedClientsFromOps();
+        selectedId = operations[0].id;
+        saveOps();
+        saveClients();
+        renderOpsList();
+        showOutput('Demo reiniciada con datos de ejemplo.');
+      });
+      function setDefaultDue() {
+        const due = new Date();
+        due.setDate(due.getDate() + 7);
+        document.getElementById('op-due').value = due.toISOString().slice(0, 10);
+      }
+      ['roi-hours', 'roi-cost'].forEach(id => document.getElementById(id).addEventListener('input', renderRoiPanel));
+      search.addEventListener('input', renderOpsList);
+      filter.addEventListener('change', renderOpsList);
+
+      setDefaultDue();
+      renderRoiPanel();
+      renderOpsList();
+    }
+
+    // ---------- Clientes ----------
+    function clientOps(name) { return operations.filter(op => op.client === name); }
+    function renderClientesView() {
+      appView.innerHTML = `
+        <div class="function-grid">
+          <aside class="card" aria-label="Nuevo cliente">
+            <h3 id="client-form-title">Nuevo cliente</h3>
+            <form id="client-form" class="form-grid">
+              <input type="hidden" id="client-edit-id" value="">
+              <div class="span-2"><label for="client-name">Nombre / razón social</label><input id="client-name" maxlength="48" required placeholder="Metalúrgica Sur"></div>
+              <div><label for="client-contact">Contacto</label><input id="client-contact" maxlength="40" placeholder="Nombre de referente"></div>
+              <div><label for="client-phone">Teléfono</label><input id="client-phone" maxlength="24" placeholder="+54 9 11…"></div>
+              <div class="span-2"><label for="client-email">Email</label><input id="client-email" type="email" maxlength="60" placeholder="contacto@empresa.com"></div>
+              <div class="span-2"><label for="client-notes">Notas</label><textarea id="client-notes" rows="2" maxlength="200"></textarea></div>
+              <button class="btn primary span-2" type="submit" id="client-submit">Guardar cliente</button>
+            </form>
+            <p class="notice" id="client-output" style="margin-top:12px">Registro de clientes derivado de las operaciones.</p>
+          </aside>
+          <section class="card" aria-label="Clientes">
+            <h3>Clientes (${clients.length})</h3>
+            <div class="ops" id="client-list" style="margin-top:12px"></div>
+          </section>
+        </div>
+      `;
+      const form = document.getElementById('client-form');
+      const output = document.getElementById('client-output');
+      const listEl = document.getElementById('client-list');
+
+      function renderList() {
+        listEl.innerHTML = clients.map(c => {
+          const ops = clientOps(c.name);
+          const risk = ops.filter(op => opStatus(op) === 'risk').length;
+          return `<article class="op" style="cursor:default">
+            <div>
+              <strong>${escapeHtml(c.name)}</strong><br>
+              <small>${ops.length} legajo(s) · ${risk} en riesgo${c.contact ? ` · ${escapeHtml(c.contact)}` : ''}${c.phone ? ` · ${escapeHtml(c.phone)}` : ''}${c.email ? ` · ${escapeHtml(c.email)}` : ''}</small>
+              ${c.notes ? `<p class="hint">${escapeHtml(c.notes)}</p>` : ''}
+            </div>
+            <div class="tool-buttons" style="margin-top:0">
+              <button class="mini-btn" type="button" data-edit="${escapeHtml(c.id)}">Editar</button>
+              <button class="mini-btn danger" type="button" data-del="${escapeHtml(c.id)}">Eliminar</button>
+            </div>
+          </article>`;
+        }).join('') || '<p class="notice">Sin clientes todavía.</p>';
+        listEl.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => startEdit(btn.dataset.edit)));
+        listEl.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', () => {
+          clients = clients.filter(c => c.id !== btn.dataset.del);
+          saveClients();
+          renderList();
+          output.textContent = 'Cliente eliminado del registro demo.';
+        }));
+      }
+      function startEdit(id) {
+        const c = clients.find(c => c.id === id);
+        if (!c) return;
+        document.getElementById('client-edit-id').value = c.id;
+        document.getElementById('client-name').value = c.name;
+        document.getElementById('client-contact').value = c.contact || '';
+        document.getElementById('client-phone').value = c.phone || '';
+        document.getElementById('client-email').value = c.email || '';
+        document.getElementById('client-notes').value = c.notes || '';
+        document.getElementById('client-form-title').textContent = `Editar: ${c.name}`;
+        document.getElementById('client-submit').textContent = 'Actualizar cliente';
+      }
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const editId = document.getElementById('client-edit-id').value;
+        const name = document.getElementById('client-name').value.trim();
+        if (!name) return;
+        const data = {
+          contact: document.getElementById('client-contact').value.trim(),
+          phone: document.getElementById('client-phone').value.trim(),
+          email: document.getElementById('client-email').value.trim(),
+          notes: document.getElementById('client-notes').value.trim()
+        };
+        if (editId) {
+          const c = clients.find(c => c.id === editId);
+          if (c) Object.assign(c, { name, ...data });
+          output.textContent = `Cliente actualizado: ${name}`;
+        } else {
+          if (clients.some(c => c.name.toLowerCase() === name.toLowerCase())) { output.textContent = `Ya existe un cliente “${name}”.`; return; }
+          clients.push({ id: slugify(name), name, ...data });
+          output.textContent = `Cliente creado: ${name}`;
+        }
+        saveClients();
+        form.reset();
+        document.getElementById('client-edit-id').value = '';
+        document.getElementById('client-form-title').textContent = 'Nuevo cliente';
+        document.getElementById('client-submit').textContent = 'Guardar cliente';
+        renderList();
+      });
+      renderList();
+    }
+
+    // ---------- Vencimientos ----------
+    function renderVencimientosView() {
+      let range = 'all';
+      appView.innerHTML = `
+        <h2 style="font-size:26px">Vencimientos</h2>
+        <p class="hint">ETAs y vencimientos ordenados por urgencia. Filtrá por ventana de días.</p>
+        <div class="tool-buttons" id="venc-filters" style="margin-top:10px">
+          <button class="mini-btn" data-range="7" type="button">Próximos 7 días</button>
+          <button class="mini-btn" data-range="14" type="button">Próximos 14 días</button>
+          <button class="mini-btn" data-range="30" type="button">Próximos 30 días</button>
+          <button class="mini-btn primary" data-range="all" type="button" aria-pressed="true">Todos</button>
+        </div>
+        <div id="venc-table" style="margin-top:14px"></div>
+      `;
+      const filtersEl = document.getElementById('venc-filters');
+      const tableEl = document.getElementById('venc-table');
+      function renderTable() {
+        const rows = operations
+          .filter(op => range === 'all' || daysUntil(op.due) <= Number(range))
+          .sort((a, b) => daysUntil(a.due) - daysUntil(b.due));
+        tableEl.innerHTML = rows.length ? `<div class="matrix"><table>
+          <thead><tr><th>Legajo</th><th>Cliente</th><th>Vencimiento</th><th>Estado</th><th>Riesgo</th><th>Faltantes</th></tr></thead>
+          <tbody>${rows.map(op => `<tr>
+            <td>${escapeHtml(op.id)}</td>
+            <td>${escapeHtml(op.client)}</td>
+            <td>${escapeHtml(op.due)} · ${fmtDue(op)}</td>
+            <td><span class="tag ${opStatus(op) === 'risk' ? 'red' : ''}">${opStatus(op) === 'risk' ? 'En riesgo' : 'Listo'}</span></td>
+            <td>${riskScore(op)}/100</td>
+            <td>${escapeHtml(missingDocs(op).join(' · ') || 'Ninguno')}</td>
+          </tr>`).join('')}</tbody>
+        </table></div>` : '<p class="notice">Sin operaciones en esta ventana.</p>';
+      }
+      filtersEl.querySelectorAll('[data-range]').forEach(btn => btn.addEventListener('click', () => {
+        range = btn.dataset.range;
+        filtersEl.querySelectorAll('[data-range]').forEach(b => { b.classList.toggle('primary', b === btn); b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+        renderTable();
+      }));
+      renderTable();
+    }
+
+    // ---------- Documentos ----------
+    function renderDocumentosView() {
+      appView.innerHTML = `
+        <h2 style="font-size:26px">Matriz de documentos</h2>
+        <p class="hint">Estado de cada documento por legajo, filtrable por cliente y estado.</p>
+        <div class="toolbar">
+          <div style="width:220px"><label for="doc-client">Cliente</label><select id="doc-client"><option value="all">Todos</option>${clients.map(c => `<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('')}</select></div>
+          <div style="width:190px"><label for="doc-status">Estado</label><select id="doc-status"><option value="all">Todos</option><option value="Falta">Falta</option><option value="Recibido">Recibido</option></select></div>
+        </div>
+        <div id="doc-table"></div>
+        <div class="tool-buttons">
+          <button class="mini-btn primary" id="doc-export" type="button">Exportar CSV</button>
+        </div>
+        <pre id="doc-output" class="notice output-box" aria-live="polite">Listo.</pre>
+      `;
+      function rows() {
+        const out = [];
+        operations.forEach(op => docsFor(op).forEach(doc => out.push({ legajo: op.id, cliente: op.client, tipo: kindLabels[op.kind] || op.kind, documento: doc, estado: op.checked?.[doc] ? 'Recibido' : 'Falta' })));
+        return out;
+      }
+      const clientSel = document.getElementById('doc-client');
+      const statusSel = document.getElementById('doc-status');
+      const tableEl = document.getElementById('doc-table');
+      const output = document.getElementById('doc-output');
+      function renderTable() {
+        const filtered = rows().filter(r => (clientSel.value === 'all' || r.cliente === clientSel.value) && (statusSel.value === 'all' || r.estado === statusSel.value));
+        tableEl.innerHTML = filtered.length ? `<div class="matrix"><table>
+          <thead><tr><th>Legajo</th><th>Cliente</th><th>Tipo</th><th>Documento</th><th>Estado</th></tr></thead>
+          <tbody>${filtered.map(r => `<tr><td>${escapeHtml(r.legajo)}</td><td>${escapeHtml(r.cliente)}</td><td>${escapeHtml(r.tipo)}</td><td>${escapeHtml(r.documento)}</td><td><span class="tag ${r.estado === 'Falta' ? 'red' : ''}">${r.estado}</span></td></tr>`).join('')}</tbody>
+        </table></div>` : '<p class="notice">Sin documentos para este filtro.</p>';
+      }
+      clientSel.addEventListener('change', renderTable);
+      statusSel.addEventListener('change', renderTable);
+      document.getElementById('doc-export').addEventListener('click', () => output.textContent = toCsv(rows()));
+      renderTable();
+    }
+
+    // ---------- Portal cliente ----------
+    function renderPortalView() {
+      appView.innerHTML = `
+        <h2 style="font-size:26px">Portal cliente (simulado)</h2>
+        <p class="hint">Vista compartible por legajo: lo que vería tu cliente. Local, sin backend real.</p>
+        <div style="max-width:260px;margin-top:12px"><label for="portal-op">Legajo</label><select id="portal-op">${operations.map(op => `<option value="${escapeHtml(op.id)}">${escapeHtml(op.id)} · ${escapeHtml(op.client)}</option>`).join('') || '<option value="">Sin legajos</option>'}</select></div>
+        <div id="portal-card" style="margin-top:16px"></div>
+      `;
+      const sel = document.getElementById('portal-op');
+      const cardEl = document.getElementById('portal-card');
+      function render() {
+        const op = operations.find(o => o.id === sel.value);
+        if (!op) { cardEl.innerHTML = '<p class="notice">Creá un legajo en el módulo Legajos primero.</p>'; return; }
+        const link = `https://portal.aduanadocs.app/legajo/${slugify(op.id)}`;
+        const message = `Hola ${op.client}, así va tu legajo ${op.id}: ${pct(op)}% completo. ${missingDocs(op).length ? `Faltan: ${missingDocs(op).join(', ')}.` : 'Documentación completa.'} Estado: ${fmtDue(op)}.`;
+        cardEl.innerHTML = `<div class="card">
+          <div class="case-top">
+            <div><div class="eyebrow">${escapeHtml(op.id)}</div><h3>${escapeHtml(op.client)}</h3><p>${escapeHtml(op.lane)} · ${fmtDue(op)}</p></div>
+            <span class="status"><span class="dot"></span>${pct(op)}% completo</span>
+          </div>
+          <div class="progress" style="margin-top:14px"><span style="width:${pct(op)}%"></span></div>
+          <div class="doc-list">${docsFor(op).map(doc => `<label class="doc"><input type="checkbox" disabled ${op.checked?.[doc] ? 'checked' : ''}><span>${escapeHtml(doc)}</span><span class="tag ${op.checked?.[doc] ? '' : 'red'}">${op.checked?.[doc] ? 'OK' : 'Falta'}</span></label>`).join('')}</div>
+          <p class="notice" style="margin-top:14px">Este link es una simulación local. En producción requiere hosting, auth de cliente y almacenamiento cifrado real.</p>
+          <div class="tool-buttons">
+            <button class="mini-btn primary" id="portal-copy-link" type="button">Copiar link</button>
+            <button class="mini-btn" id="portal-copy-msg" type="button">Copiar mensaje</button>
+          </div>
+          <pre id="portal-output" class="notice output-box" aria-live="polite">Listo.</pre>
+        </div>`;
+        const out = document.getElementById('portal-output');
+        document.getElementById('portal-copy-link').addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(link); out.textContent = `Link copiado:\n${link}`; }
+          catch (_) { out.textContent = link; }
+        });
+        document.getElementById('portal-copy-msg').addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(message); out.textContent = `Mensaje copiado:\n${message}`; }
+          catch (_) { out.textContent = message; }
+        });
+      }
+      sel.addEventListener('change', render);
+      render();
+    }
+
+    // ---------- Configuración ----------
+    const plans = [
+      { id: 'starter', name: 'Starter', desc: 'USD 200–500/mes. 1 estudio chico, portal y checklists.' },
+      { id: 'operacion', name: 'Operación', desc: 'Fee por legajo/operación, alineado con volumen real.' },
+      { id: 'midmarket', name: 'Mid-market', desc: 'USD 2k–5k/mes. Multi-sucursal, roles, auditoría y soporte.' },
+      { id: 'enterprise', name: 'Enterprise', desc: 'Integraciones/OCR/API sólo con contrato, no en el MVP.' }
+    ];
+    const readinessItems = [
+      'Backend con autenticación real (no localStorage)',
+      'Almacenamiento cifrado de documentos',
+      'Registro de auditoría por acción/usuario',
+      'Backups automáticos y plan de recuperación',
+      'Roles y permisos por estudio/cliente',
+      'Revisión legal/compliance del manejo documental'
+    ];
+    function renderConfigView() {
+      appView.innerHTML = `
+        <h2 style="font-size:26px">Configuración / plan comercial</h2>
+        <div class="card" style="margin-top:14px">
+          <h3>Workspace</h3>
+          <form id="settings-form" class="form-grid" style="margin-top:10px">
+            <div class="span-2"><label for="settings-workspace">Nombre del workspace</label><input id="settings-workspace" maxlength="40" value="${escapeHtml(settings.workspace)}"></div>
+            <button class="btn primary span-2" type="submit">Guardar</button>
+          </form>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Plan comercial</h3>
+          <p class="hint">Elegí el plan de referencia para esta demo/piloto.</p>
+          <div class="mini-grid" id="plan-grid" style="margin-top:12px">
+            ${plans.map(p => `<div class="plan-card" data-plan="${p.id}" role="button" tabindex="0" aria-pressed="${settings.plan === p.id}"><strong>${p.name}</strong><p>${p.desc}</p></div>`).join('')}
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Checklist de producción</h3>
+          <p class="hint">MVP local listo para demos y pilotos. Esto falta para producción real.</p>
+          <div style="margin-top:12px">${readinessItems.map((item, i) => `<label class="readiness-row"><input type="checkbox" data-idx="${i}" ${settings.readiness[i] ? 'checked' : ''}><span>${escapeHtml(item)}</span></label>`).join('')}</div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>¿Listo para vender?</h3>
+          <p>Este workspace es un MVP local para demos y pilotos comerciales. Producción requiere backend cifrado, autenticación real y auditoría.</p>
+          <div class="tool-buttons">
+            <a class="mini-btn primary" href="#go-to-market">Ver plan de implementación concierge</a>
+            <button class="mini-btn danger" id="reset-workspace" type="button">Reiniciar datos demo</button>
+          </div>
+          <p class="notice" id="settings-output" style="margin-top:12px">Sin cambios.</p>
+        </div>
+      `;
+      const output = document.getElementById('settings-output');
+      document.getElementById('settings-form').addEventListener('submit', e => {
+        e.preventDefault();
+        settings.workspace = document.getElementById('settings-workspace').value.trim() || 'Estudio Demo';
+        saveSettings();
+        const session = loadSession();
+        if (session) { session.workspace = settings.workspace; saveSession(session); document.getElementById('app-workspace-label').textContent = settings.workspace; }
+        output.textContent = `Workspace actualizado: ${settings.workspace}`;
+      });
+      document.getElementById('plan-grid').querySelectorAll('.plan-card').forEach(card => {
+        const select = () => {
+          settings.plan = card.dataset.plan;
+          saveSettings();
+          document.querySelectorAll('.plan-card').forEach(c => c.setAttribute('aria-pressed', c === card ? 'true' : 'false'));
+          output.textContent = `Plan seleccionado: ${card.querySelector('strong').textContent}`;
+        };
+        card.addEventListener('click', select);
+        card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } });
+      });
+      appView.querySelectorAll('.readiness-row input').forEach(box => {
+        box.addEventListener('change', () => {
+          settings.readiness[box.dataset.idx] = box.checked;
+          saveSettings();
         });
       });
-      detailEl.querySelector('#delete-op').addEventListener('click', () => {
-        operations = operations.filter(item => item.id !== op.id);
-        selectedId = operations[0]?.id || null;
-        saveOps();
-        renderOps();
-        showOutput(`Legajo eliminado: ${op.id}`);
+      document.getElementById('reset-workspace').addEventListener('click', () => {
+        operations = structuredClone(seedOperations);
+        clients = seedClientsFromOps();
+        settings = { ...defaultSettings, workspace: settings.workspace };
+        saveOps(); saveClients(); saveSettings();
+        output.textContent = 'Datos demo reiniciados.';
       });
     }
-    document.getElementById('op-form').addEventListener('submit', e => {
-      e.preventDefault();
-      const id = document.getElementById('op-id').value.trim().toUpperCase();
-      if (!id) return;
-      if (operations.some(op => op.id === id)) { showOutput(`Ya existe el legajo ${id}.`); return; }
-      const kind = document.getElementById('op-kind').value;
-      const checked = Object.fromEntries(docsFor({kind}).map(doc => [doc, false]));
-      const op = {
-        id,
-        kind,
-        client: document.getElementById('op-client').value.trim(),
-        lane: document.getElementById('op-lane').value.trim() || 'Ruta sin definir',
-        due: document.getElementById('op-due').value,
-        notes: document.getElementById('op-notes').value.trim(),
-        checked
-      };
-      operations.unshift(op);
-      selectedId = id;
-      saveOps();
-      e.target.reset();
-      setDefaultDue();
-      renderOps();
-      showOutput(`Legajo creado: ${id}. Checklist generado: ${docsFor(op).join(', ')}`);
-    });
-    function exportRows() {
-      return operations.map(op => ({id: op.id, cliente: op.client, tipo: op.kind, ruta: op.lane, vencimiento: op.due, avance: `${pct(op)}%`, riesgo: riskScore(op), faltantes: missingDocs(op).join(' | ')}));
-    }
-    document.getElementById('export-json').addEventListener('click', () => showOutput(JSON.stringify(exportRows(), null, 2)));
-    document.getElementById('export-csv').addEventListener('click', () => {
-      const rows = exportRows();
-      const headers = Object.keys(rows[0] || {id:''});
-      const csv = [headers.join(','), ...rows.map(row => headers.map(h => `"${String(row[h]).replaceAll('"','""')}"`).join(','))].join('\n');
-      showOutput(csv);
-    });
-    document.getElementById('copy-summary').addEventListener('click', async () => {
-      const summary = exportRows().map(r => `${r.id} · ${r.cliente}: ${r.avance}, riesgo ${r.riesgo}/100, faltan ${r.faltantes || 'nada'}`).join('\n');
-      try { await navigator.clipboard.writeText(summary); showOutput('Resumen copiado al portapapeles:\n' + summary); }
-      catch (_) { showOutput(summary); }
-    });
-    document.getElementById('reset-demo').addEventListener('click', () => {
-      operations = structuredClone(seedOperations);
-      selectedId = operations[0].id;
-      saveOps();
-      renderOps();
-      showOutput('Demo reiniciada con datos de ejemplo.');
-    });
-    function setDefaultDue() {
-      const due = new Date();
-      due.setDate(due.getDate() + 7);
-      document.getElementById('op-due').value = due.toISOString().slice(0,10);
-    }
-    ['roi-hours','roi-cost'].forEach(id => document.getElementById(id).addEventListener('input', renderRoi));
-    search.addEventListener('input', renderOps);
-    filter.addEventListener('change', renderOps);
-    setDefaultDue();
-    renderRoi();
-    renderOps();
+
+    applyRoute();
   </script>
 </body>
 </html>
