@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Página de producto e investigación de mercado para una plataforma de gestión de documentación aduanera para despachantes, ATA, forwarders e importadores/exportadores.">
+  <title>AduanaDocs — Gestión documental aduanera</title>
+  <style>
+    /* ponytail: one self-contained HTML, no build/deps; upgrade path: split into app + backend only after validating demand with despachantes reales. */
+    :root {
+      color-scheme: dark;
+      --bg: #030406;
+      --panel: #0a0d12;
+      --panel-2: #111722;
+      --ink: #f6f2e8;
+      --muted: #b6ad9d;
+      --line: #263244;
+      --line-soft: rgba(246, 242, 232, .12);
+      --gold: #f5c842;
+      --gold-2: #d99b2b;
+      --green: #42d392;
+      --red: #ff6b6b;
+      --blue: #73a7ff;
+      --radius: 22px;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .42);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.55;
+      text-rendering: geometricPrecision;
+    }
+    a { color: inherit; }
+    .skip {
+      position: absolute;
+      left: -999px;
+      top: 12px;
+      z-index: 20;
+      background: var(--gold);
+      color: #111;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+    }
+    .skip:focus { left: 12px; }
+    .wrap { width: min(1180px, calc(100% - 34px)); margin: 0 auto; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(3, 4, 6, .94);
+      border-bottom: 1px solid var(--line-soft);
+    }
+    nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 74px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: -.04em; }
+    .mark { width: 38px; height: 38px; border-radius: 12px; background: var(--gold); color: #090909; display: grid; place-items: center; box-shadow: 0 0 0 5px rgba(245, 200, 66, .08); }
+    .navlinks { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .navlinks a { text-decoration: none; color: var(--muted); padding: 9px 11px; border-radius: 999px; font-size: 14px; }
+    .navlinks a:hover, .navlinks a:focus { background: var(--panel-2); color: var(--ink); outline: none; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 12px 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: 999px;
+      background: var(--panel-2);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 800;
+    }
+    .btn.primary { background: var(--gold); color: #0c0c0d; border-color: var(--gold); }
+    .btn:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid rgba(245, 200, 66, .45); outline-offset: 3px; }
+    .hero { padding: 76px 0 36px; }
+    .grid { display: grid; gap: 22px; }
+    .hero-grid { grid-template-columns: minmax(0, 1.08fr) minmax(320px, .92fr); align-items: center; }
+    .eyebrow { color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: .14em; font-size: 12px; }
+    h1, h2, h3 { line-height: 1.02; margin: 0; letter-spacing: -.055em; }
+    h1 { font-size: clamp(43px, 7vw, 88px); max-width: 960px; }
+    h2 { font-size: clamp(32px, 5vw, 56px); }
+    h3 { font-size: 22px; }
+    p { margin: 0; color: var(--muted); }
+    .lead { font-size: clamp(18px, 2.2vw, 24px); margin-top: 20px; max-width: 760px; color: #d8d0c4; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 28px; }
+    .hero-card, .card, .panel {
+      background: linear-gradient(180deg, rgba(17, 23, 34, .98), rgba(8, 11, 16, .98));
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .hero-card { padding: 18px; }
+    .case-top { display: flex; justify-content: space-between; gap: 14px; align-items: flex-start; padding-bottom: 14px; border-bottom: 1px solid var(--line-soft); }
+    .status { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border-radius: 999px; font-size: 12px; font-weight: 900; background: rgba(66, 211, 146, .1); color: var(--green); border: 1px solid rgba(66, 211, 146, .23); white-space: nowrap; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .doc-list { display: grid; gap: 10px; margin-top: 16px; }
+    .doc { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding: 12px; background: rgba(255, 255, 255, .035); border: 1px solid var(--line-soft); border-radius: 15px; }
+    .doc input { width: 18px; height: 18px; accent-color: var(--gold); }
+    .tag { font-size: 12px; color: #0b0c0e; background: var(--gold); border-radius: 999px; padding: 5px 8px; font-weight: 900; white-space: nowrap; }
+    .tag.blue { background: rgba(115, 167, 255, .16); color: #b8d0ff; border: 1px solid rgba(115, 167, 255, .3); }
+    .tag.red { background: rgba(255, 107, 107, .14); color: #ffc3c3; border: 1px solid rgba(255, 107, 107, .3); }
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 30px; }
+    .metric { padding: 16px; border: 1px solid var(--line-soft); border-radius: 18px; background: rgba(255,255,255,.03); }
+    .metric strong { display: block; color: var(--ink); font-size: 22px; letter-spacing: -.035em; }
+    .metric span { color: var(--muted); font-size: 13px; }
+    section { padding: 58px 0; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }
+    .section-head p { max-width: 660px; }
+    .cards-3 { grid-template-columns: repeat(3, 1fr); }
+    .cards-2 { grid-template-columns: repeat(2, 1fr); }
+    .card { padding: 22px; }
+    .card p { margin-top: 10px; }
+    .card ul { color: #d6cec1; padding-left: 20px; margin: 14px 0 0; }
+    .card li { margin: 7px 0; }
+    .pain { border-left: 4px solid var(--gold); }
+    .persona-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    button { font: inherit; cursor: pointer; }
+    .tab { border: 1px solid var(--line-soft); background: var(--panel-2); color: var(--muted); border-radius: 999px; padding: 10px 13px; font-weight: 800; }
+    .tab[aria-selected="true"] { background: var(--gold); color: #0b0b0c; border-color: var(--gold); }
+    .persona-copy { min-height: 210px; }
+    .split { display: grid; grid-template-columns: minmax(320px, .9fr) minmax(0, 1.1fr); gap: 22px; align-items: start; }
+    .app-shell { background: #05070a; border: 1px solid var(--line-soft); border-radius: 28px; overflow: hidden; box-shadow: var(--shadow); }
+    .app-bar { display: flex; justify-content: space-between; align-items: center; padding: 16px; background: #090d13; border-bottom: 1px solid var(--line-soft); }
+    .app-body { display: grid; grid-template-columns: 240px 1fr; min-height: 560px; }
+    .side { border-right: 1px solid var(--line-soft); padding: 14px; background: #070a0f; }
+    .side a { display: flex; justify-content: space-between; gap: 10px; text-decoration: none; color: var(--muted); padding: 11px 12px; border-radius: 14px; margin-bottom: 4px; }
+    .side a.active { background: var(--panel-2); color: var(--ink); }
+    .main { padding: 18px; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 16px; }
+    input, select, textarea { width: 100%; border: 1px solid var(--line-soft); background: #090d13; color: var(--ink); border-radius: 14px; padding: 12px; }
+    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+    .ops { display: grid; gap: 12px; }
+    .op { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 14px; border: 1px solid var(--line-soft); border-radius: 18px; background: rgba(255,255,255,.03); }
+    .op small { color: var(--muted); }
+    .progress { height: 9px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; margin-top: 10px; }
+    .progress span { display: block; height: 100%; background: var(--gold); }
+    .matrix { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: 18px; }
+    table { border-collapse: collapse; width: 100%; min-width: 760px; background: var(--panel); }
+    th, td { padding: 14px; text-align: left; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    th { color: var(--ink); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+    td { color: #d9d1c6; }
+    tr:last-child td { border-bottom: 0; }
+    .quote { padding: 28px; border: 1px solid rgba(245, 200, 66, .24); background: rgba(245, 200, 66, .06); border-radius: var(--radius); }
+    .quote strong { color: var(--gold); }
+    .timeline { display: grid; gap: 12px; counter-reset: step; }
+    .step { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; padding: 16px; border: 1px solid var(--line-soft); border-radius: 18px; background: rgba(255,255,255,.03); }
+    .step::before { counter-increment: step; content: counter(step); width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: #050505; display: grid; place-items: center; font-weight: 900; }
+    .footer { padding: 44px 0 64px; color: var(--muted); border-top: 1px solid var(--line-soft); }
+    .sources { font-size: 13px; }
+    .sources li { margin: 8px 0; }
+    .notice { border: 1px solid rgba(255,255,255,.16); border-radius: 16px; padding: 14px; color: #d9d1c6; background: rgba(255,255,255,.035); }
+    .mobile-note { display: none; }
+
+    @media (max-width: 900px) {
+      .hero-grid, .split, .app-body { grid-template-columns: 1fr; }
+      .cards-3, .cards-2, .metrics { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 12px; }
+      .side { border-right: 0; border-bottom: 1px solid var(--line-soft); display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+      .navlinks { display: none; }
+      .mobile-note { display: block; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .001ms !important; scroll-behavior: auto !important; transition-duration: .001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido">Saltar al contenido</a>
+  <header>
+    <nav class="wrap" aria-label="Navegación principal">
+      <div class="brand"><span class="mark" aria-hidden="true">AD</span><span>AduanaDocs</span></div>
+      <div class="navlinks">
+        <a href="#mercado">Mercado</a>
+        <a href="#personas">Usuarios</a>
+        <a href="#producto">Producto</a>
+        <a href="#demo">Demo</a>
+        <a href="#go-to-market">GTM</a>
+      </div>
+      <a class="btn primary" href="#demo">Ver demo</a>
+    </nav>
+  </header>
+
+  <main id="contenido">
+    <section class="hero">
+      <div class="wrap hero-grid grid">
+        <div>
+          <div class="eyebrow">Investigación + página web MVP</div>
+          <h1>Legajos aduaneros sin perseguir PDFs por WhatsApp.</h1>
+          <p class="lead">Una página/prototipo para vender y validar una plataforma de gestión documental aduanera: intake, control de faltantes, vencimientos, trazabilidad y portal de cliente para despachantes, ATA, forwarders e importadores/exportadores.</p>
+          <div class="actions">
+            <a class="btn primary" href="#mercado">Leer investigación</a>
+            <a class="btn" href="#producto">Ver propuesta de producto</a>
+          </div>
+          <div class="metrics" aria-label="Indicadores de mercado usados para la hipótesis">
+            <div class="metric"><strong>USD 140,5B</strong><span>intercambio argentino de bienes 2024 según INDEC</span></div>
+            <div class="metric"><strong>+34,3%</strong><span>importaciones ene-may 2025 vs. año anterior según INDEC</span></div>
+            <div class="metric"><strong>ARCA + VUCE</strong><span>ecosistema oficial; el producto no lo reemplaza, lo ordena</span></div>
+            <div class="metric"><strong>0 deps</strong><span>HTML estático para validar demanda antes de construir SaaS</span></div>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Vista rápida de legajo aduanero">
+          <div class="case-top">
+            <div>
+              <div class="eyebrow">Legajo IMP-2026-0146</div>
+              <h3>Autopartes · Buenos Aires</h3>
+              <p>Cliente: Metalúrgica Sur · ETA: 09/07 · Canal: pendiente</p>
+            </div>
+            <span class="status"><span class="dot"></span>Listo para oficializar</span>
+          </div>
+          <div class="doc-list">
+            <label class="doc"><input type="checkbox" checked><span>Factura comercial validada</span><span class="tag">OK</span></label>
+            <label class="doc"><input type="checkbox" checked><span>Packing list + peso bruto/neto</span><span class="tag">OK</span></label>
+            <label class="doc"><input type="checkbox"><span>Certificado de origen</span><span class="tag red">Falta</span></label>
+            <label class="doc"><input type="checkbox" checked><span>BL / guía aérea / carta de porte</span><span class="tag blue">ATA</span></label>
+            <label class="doc"><input type="checkbox"><span>Intervención/VUCE si aplica</span><span class="tag red">Revisar</span></label>
+          </div>
+          <p class="notice" style="margin-top:14px">Nota: demo offline. No subir documentación real acá; en producto real exige auth, cifrado, auditoría y backups.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="mercado">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Lectura de mercado</div>
+            <h2>El hueco no es “hacer otro sistema oficial”. Es controlar el pre/post despacho.</h2>
+          </div>
+          <p>ARCA/DGA, SITA, SICNEA, VUCE y sistemas privados ya cubren trámites específicos. El dolor comercial queda en el trabajo invisible: pedir documentos, detectar faltantes, ordenar versiones, explicar estado al cliente y dejar evidencia auditable.</p>
+        </div>
+        <div class="grid cards-3">
+          <article class="card pain">
+            <h3>Dolor 1: documentación fragmentada</h3>
+            <p>Factura, packing, BL/AWB/CRT, certificados, autorizaciones, intervenciones y comprobantes viven en mail, drive, chats y carpetas por cliente. El costo real es humano: seguimiento y reprocesos.</p>
+          </article>
+          <article class="card pain">
+            <h3>Dolor 2: estado opaco para el cliente</h3>
+            <p>El importador pregunta “¿qué falta?” y el despachante responde manualmente. Un portal con semáforo por operación reduce interrupciones y baja riesgo de promesas sin evidencia.</p>
+          </article>
+          <article class="card pain">
+            <h3>Dolor 3: cumplimiento y auditoría</h3>
+            <p>El mercado enterprise vende “audit trail”, clasificación, screening y compliance. Para PyMEs aduaneras, la cuña viable es más simple: legajo completo, trazabilidad de cambios y vencimientos.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="personas">
+      <div class="wrap split">
+        <div>
+          <div class="eyebrow">ICP y usuarios</div>
+          <h2>Primero venderle al operador que vive el caos documental.</h2>
+          <p class="lead">Beachhead recomendado: despachantes/agencias de 5–30 personas con volumen recurrente, muchos clientes PyME y operaciones multicanal.</p>
+        </div>
+        <div class="panel card">
+          <div class="persona-tabs" role="tablist" aria-label="Personas objetivo">
+            <button class="tab" role="tab" aria-selected="true" data-persona="despachante">Despachante</button>
+            <button class="tab" role="tab" aria-selected="false" data-persona="ata">ATA</button>
+            <button class="tab" role="tab" aria-selected="false" data-persona="forwarder">Forwarder</button>
+            <button class="tab" role="tab" aria-selected="false" data-persona="importador">Importador/exportador</button>
+          </div>
+          <div class="persona-copy" id="persona-copy" tabindex="0"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="producto">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Propuesta de producto</div>
+            <h2>AduanaDocs: control documental antes de que el trámite explote.</h2>
+          </div>
+          <p>Posicionamiento: “capa operativa y auditable sobre mail/Drive/Excel, preparada para integrarse con herramientas oficiales y sistemas de gestión existentes”.</p>
+        </div>
+        <div class="grid cards-3">
+          <article class="card"><h3>Inbox documental</h3><p>Recepción por cliente/operación, naming estándar, validación de campos mínimos y detección de duplicados.</p></article>
+          <article class="card"><h3>Legajo por destinación</h3><p>Checklist configurable por tipo de operación: importación, exportación, tránsito, temporal, courier o régimen especial.</p></article>
+          <article class="card"><h3>Vencimientos y alertas</h3><p>ETA, certificados, temporales, prórrogas, intervenciones, documentos observados y tareas internas con responsable.</p></article>
+          <article class="card"><h3>Portal del cliente</h3><p>Semáforo de faltantes, subida segura, comentarios y aprobación de documentos sin cadenas de email interminables.</p></article>
+          <article class="card"><h3>Auditoría</h3><p>Quién subió, revisó, observó o aprobó cada archivo. Historial exportable para defensa interna y control posterior.</p></article>
+          <article class="card"><h3>Integraciones prudentes</h3><p>No prometer “conexión oficial” sin convenio/API. Primero exportables, enlaces guiados, plantillas y trazabilidad de SITA/VUCE/SICNEA.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Demo navegable</div>
+            <h2>Panel operativo mínimo: operaciones, faltantes y evidencia.</h2>
+          </div>
+          <p>Hecho en HTML/CSS/JS nativo. Guarda sólo checks de demo en el navegador; no maneja archivos reales.</p>
+        </div>
+        <div class="app-shell" aria-label="Demo de aplicación AduanaDocs">
+          <div class="app-bar">
+            <strong>AduanaDocs Operaciones</strong>
+            <span class="status"><span class="dot"></span><span id="health">3 operaciones activas</span></span>
+          </div>
+          <div class="app-body">
+            <aside class="side" aria-label="Módulos de la demo">
+              <a href="#demo" class="active">Operaciones <span>3</span></a>
+              <a href="#demo">Faltantes <span>7</span></a>
+              <a href="#demo">Vencimientos <span>2</span></a>
+              <a href="#demo">Clientes <span>18</span></a>
+              <a href="#demo">Auditoría <span>Hoy</span></a>
+              <a href="#demo">Reportes <span>PDF</span></a>
+            </aside>
+            <div class="main">
+              <div class="toolbar">
+                <div style="flex:1; min-width:220px">
+                  <label for="search">Buscar operación, cliente o documento</label>
+                  <input id="search" type="search" maxlength="60" placeholder="Ej: IMP, origen, certificado…">
+                </div>
+                <div style="width:190px">
+                  <label for="filter">Estado</label>
+                  <select id="filter">
+                    <option value="all">Todos</option>
+                    <option value="risk">En riesgo</option>
+                    <option value="ready">Listos</option>
+                  </select>
+                </div>
+              </div>
+              <div class="ops" id="ops"></div>
+            </div>
+          </div>
+        </div>
+        <p class="mobile-note notice" style="margin-top:14px">En mobile, el prototipo se compacta para revisión comercial; la app real debería priorizar subida rápida, cámara/escaneo y aprobaciones.</p>
+      </div>
+    </section>
+
+    <section id="competencia">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Competencia y huecos</div>
+            <h2>Los grandes venden compliance global. El mercado local necesita operación simple.</h2>
+          </div>
+          <p>La oportunidad no es competir frontalmente con SAP/Thomson/Descartes. Es crear una capa liviana para estudios y operadores locales que todavía resuelven legajos con correo, Excel, carpetas y memoria del equipo.</p>
+        </div>
+        <div class="matrix" role="region" aria-label="Matriz competitiva" tabindex="0">
+          <table>
+            <thead><tr><th>Jugador</th><th>Lo que comunica</th><th>Brecha para AduanaDocs</th><th>Implicancia web</th></tr></thead>
+            <tbody>
+              <tr><td>SAP Global Trade Services</td><td>Automatizar compliance, controlar costos, reducir multas y despachar más rápido.</td><td>Enterprise, caro, pesado para PyMEs/estudios.</td><td>Prometer implementación liviana, no ERP.</td></tr>
+              <tr><td>Thomson Reuters ONESOURCE</td><td>Clasificación HS/ECCN, IA, auditoría, documentación por producto.</td><td>Fuerte en clasificación; no necesariamente resuelve caos diario de legajo local.</td><td>Enfatizar faltantes, versiones, portal y evidencia.</td></tr>
+              <tr><td>Descartes Customs & Regulatory</td><td>Compliance aduanero, filings, zonas francas, trade intelligence.</td><td>Suite global. Puede sobrar para operadores chicos/medianos.</td><td>“No reemplazamos tu sistema: ordenamos tu operación”.</td></tr>
+              <tr><td>Sistemas locales / planillas internas</td><td>Adaptación a hábitos locales y conocimiento del equipo.</td><td>Dependen de personas, no dejan trazabilidad fuerte ni portal moderno.</td><td>Mostrar migración gradual: importá Excel/carpeta y empezá por checklists.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="go-to-market">
+      <div class="wrap split">
+        <div>
+          <div class="eyebrow">Go-to-market</div>
+          <h2>Validación de bajo costo antes de construir SaaS.</h2>
+          <p class="lead">PONYTAIL: primero vender un flujo manual asistido + portal liviano. Construir backend, OCR e integraciones sólo cuando haya señal comercial.</p>
+        </div>
+        <div class="timeline">
+          <div class="step"><div><h3>Semana 1: entrevistas</h3><p>10 despachantes/ATA/forwarders. Preguntas: “¿qué documento se pierde más?”, “¿cuánto tiempo se va en perseguir faltantes?”, “¿qué cliente pagaría por visibilidad?”.</p></div></div>
+          <div class="step"><div><h3>Semana 2: concierge MVP</h3><p>Usar esta página + una demo de checklist. Operar 3 legajos reales como servicio manual, sin automatización cara.</p></div></div>
+          <div class="step"><div><h3>Semana 3: pricing test</h3><p>Ofertas: ARS/mes por usuario + operaciones, o fee por legajo con portal cliente. Medir willingness-to-pay y objeciones.</p></div></div>
+          <div class="step"><div><h3>Semana 4: build mínimo</h3><p>Sólo si hay pagos/carta de intención: auth, roles, almacenamiento cifrado, auditoría, backups y exportables.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap grid cards-2">
+        <div class="quote">
+          <h2>Mensaje comercial recomendado</h2>
+          <p class="lead"><strong>“Tu estudio no necesita otro Excel. Necesita saber, por operación, qué falta, quién lo debe, cuándo vence y qué evidencia queda.”</strong></p>
+        </div>
+        <div class="card">
+          <h3>Atajos intencionales del prototipo</h3>
+          <ul>
+            <li>Sin login ni subida real de archivos: por seguridad.</li>
+            <li>Sin prometer integración oficial con ARCA/VUCE/SITA: validar disponibilidad legal/técnica primero.</li>
+            <li>Sin framework: una página abre en cualquier navegador y sirve para venta/entrevistas.</li>
+            <li>Próximo paso real: convertir esta demo en flujo clickable con 3 casos de uso y formulario de lead.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap sources">
+      <strong>Fuentes usadas para la hipótesis:</strong>
+      <ol>
+        <li>ARCA / Argentina.gob.ar — Servicios aduaneros y de comercio exterior: organismo, usuarios, operadores y servicios aduaneros.</li>
+        <li>VUCE Argentina — herramienta para facilitar comercio, reducir tiempos/costos, transparencia y controles.</li>
+        <li>INDEC — Intercambio Comercial Argentino 2024: exportaciones USD 79.721M, importaciones USD 60.822M, intercambio USD 140.543M.</li>
+        <li>INDEC — primeros cinco meses 2025: exportaciones USD 32.467M (+2,6%) e importaciones USD 30.584M (+34,3%).</li>
+        <li>ARCA SITA manuales — trámites como multinota electrónica, pedido de documentación, rectificación, prórrogas y solicitudes operativas.</li>
+        <li>SAP, Thomson Reuters ONESOURCE y Descartes — patrones globales: compliance, clasificación, auditoría, customs filing y gestión de comercio exterior.</li>
+      </ol>
+      <p>Documento comercial, no asesoramiento legal/aduanero. Validar procesos vigentes con normativa aplicable y profesionales matriculados.</p>
+    </div>
+  </footer>
+
+  <script>
+    const personas = {
+      despachante: {
+        title: 'Despachante de aduana',
+        bullets: ['Dolor: faltantes, versiones, autorizaciones y presión del cliente.', 'Compra si reduce llamadas, evita omisiones y deja evidencia.', 'Mensaje: “menos seguimiento manual, más legajos listos para oficializar”.']
+      },
+      ata: {
+        title: 'Agente de transporte aduanero',
+        bullets: ['Dolor: documentos de transporte, manifiestos, arribo, cargas y coordinación con despachante.', 'Compra si baja errores de coordinación y centraliza documentos por viaje/carga.', 'Mensaje: “un tablero compartido entre transporte, despacho y cliente”.']
+      },
+      forwarder: {
+        title: 'Forwarder / logística internacional',
+        bullets: ['Dolor: visibilidad punta a punta y transferencia documental a aduana.', 'Compra si mejora handoff y reduce ida/vuelta con clientes.', 'Mensaje: “documentación lista antes de que la carga llegue”.']
+      },
+      importador: {
+        title: 'Importador / exportador',
+        bullets: ['Dolor: no sabe qué falta ni por qué se frena la operación.', 'Compra indirecta: exige portal al despachante o paga visibilidad premium.', 'Mensaje: “estado claro, documentos solicitados y aprobaciones en un solo lugar”.']
+      }
+    };
+
+    const personaCopy = document.getElementById('persona-copy');
+    function renderPersona(key) {
+      const p = personas[key];
+      personaCopy.innerHTML = `<h3>${p.title}</h3><ul>${p.bullets.map(item => `<li>${item}</li>`).join('')}</ul>`;
+    }
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', 'false'));
+        btn.setAttribute('aria-selected', 'true');
+        renderPersona(btn.dataset.persona);
+      });
+    });
+    renderPersona('despachante');
+
+    const operations = [
+      { id: 'IMP-2026-0146', client: 'Metalúrgica Sur', lane: 'Autopartes · Buenos Aires', status: 'ready', pct: 86, due: '09/07', docs: ['Factura comercial', 'Packing list', 'BL', 'Certificado de origen', 'Intervención técnica'] },
+      { id: 'EXP-2026-0092', client: 'Bodega Alto Valle', lane: 'Vino · Brasil', status: 'risk', pct: 58, due: '06/07', docs: ['Factura E', 'Packing', 'Certificado sanitario', 'Permiso embarque'] },
+      { id: 'TRA-2026-0031', client: 'Andes Cargo', lane: 'Tránsito · Chile-Paraguay', status: 'risk', pct: 44, due: 'Hoy', docs: ['Documento de transporte', 'Ruta ISTA', 'Seguro', 'Carta de instrucciones'] }
+    ];
+    const opsEl = document.getElementById('ops');
+    const search = document.getElementById('search');
+    const filter = document.getElementById('filter');
+
+    function renderOps() {
+      const q = search.value.trim().toLowerCase();
+      const f = filter.value;
+      const rows = operations.filter(op => {
+        const hay = `${op.id} ${op.client} ${op.lane} ${op.docs.join(' ')}`.toLowerCase();
+        return (!q || hay.includes(q)) && (f === 'all' || op.status === f);
+      });
+      opsEl.innerHTML = rows.map(op => `
+        <article class="op">
+          <div>
+            <strong>${op.id} · ${op.client}</strong><br>
+            <small>${op.lane} · vencimiento ${op.due}</small>
+            <div class="progress" aria-label="avance ${op.pct}%"><span style="width:${op.pct}%"></span></div>
+            <small>${op.docs.join(' · ')}</small>
+          </div>
+          <span class="tag ${op.status === 'risk' ? 'red' : ''}">${op.status === 'risk' ? 'En riesgo' : 'Listo'}</span>
+        </article>
+      `).join('') || '<p class="notice">Sin resultados. Probá otro filtro.</p>';
+      document.getElementById('health').textContent = `${rows.length} operaciones visibles`;
+    }
+    search.addEventListener('input', renderOps);
+    filter.addEventListener('change', renderOps);
+    renderOps();
+  </script>
+</body>
+</html>
