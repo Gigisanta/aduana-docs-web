@@ -148,6 +148,12 @@
     tr:last-child td { border-bottom: 0; }
     .quote { padding: 28px; border: 1px solid rgba(245, 200, 66, .24); background: rgba(245, 200, 66, .06); border-radius: var(--radius); }
     .quote strong { color: var(--gold); }
+    .research-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; align-items: stretch; margin-top: 22px; }
+    .mini-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px; }
+    .mini { padding: 14px; border: 1px solid var(--line-soft); border-radius: 16px; background: rgba(255,255,255,.03); }
+    .mini strong { display:block; color: var(--ink); margin-bottom: 5px; }
+    .risk-list { display: grid; gap: 10px; margin-top: 14px; }
+    .risk-item { padding: 12px 14px; border: 1px solid rgba(255,107,107,.22); background: rgba(255,107,107,.07); border-radius: 15px; color: #ffd8d8; }
     .timeline { display: grid; gap: 12px; counter-reset: step; }
     .step { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; padding: 16px; border: 1px solid var(--line-soft); border-radius: 18px; background: rgba(255,255,255,.03); }
     .step::before { counter-increment: step; content: counter(step); width: 32px; height: 32px; border-radius: 50%; background: var(--gold); color: #050505; display: grid; place-items: center; font-weight: 900; }
@@ -158,8 +164,8 @@
     .mobile-note { display: none; }
 
     @media (max-width: 900px) {
-      .hero-grid, .split, .app-body { grid-template-columns: 1fr; }
-      .cards-3, .cards-2, .metrics { grid-template-columns: 1fr; }
+      .hero-grid, .split, .app-body, .research-grid { grid-template-columns: 1fr; }
+      .cards-3, .cards-2, .metrics, .mini-grid { grid-template-columns: 1fr; }
       .section-head { display: block; }
       .section-head p { margin-top: 12px; }
       .side { border-right: 0; border-bottom: 1px solid var(--line-soft); display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
@@ -178,9 +184,11 @@
       <div class="brand"><span class="mark" aria-hidden="true">AD</span><span>AduanaDocs</span></div>
       <div class="navlinks">
         <a href="#mercado">Mercado</a>
+        <a href="#normativa">Normativa</a>
         <a href="#personas">Usuarios</a>
         <a href="#producto">Producto</a>
         <a href="#demo">Demo</a>
+        <a href="#competencia">Competencia</a>
         <a href="#go-to-market">GTM</a>
       </div>
       <a class="btn primary" href="#demo">Ver demo</a>
@@ -201,7 +209,7 @@
           <div class="metrics" aria-label="Indicadores de mercado usados para la hipótesis">
             <div class="metric"><strong>USD 140,5B</strong><span>intercambio argentino de bienes 2024 según INDEC</span></div>
             <div class="metric"><strong>+34,3%</strong><span>importaciones ene-may 2025 vs. año anterior según INDEC</span></div>
-            <div class="metric"><strong>ARCA + VUCE</strong><span>ecosistema oficial; el producto no lo reemplaza, lo ordena</span></div>
+            <div class="metric"><strong>8 etapas</strong><span>pre-arribo, SEDI, oficialización, canal, pago, levante y archivo</span></div>
             <div class="metric"><strong>0 deps</strong><span>HTML estático para validar demanda antes de construir SaaS</span></div>
           </div>
         </div>
@@ -248,6 +256,80 @@
           <article class="card pain">
             <h3>Dolor 3: cumplimiento y auditoría</h3>
             <p>El mercado enterprise vende “audit trail”, clasificación, screening y compliance. Para PyMEs aduaneras, la cuña viable es más simple: legajo completo, trazabilidad de cambios y vencimientos.</p>
+          </article>
+        </div>
+        <div class="research-grid">
+          <article class="card">
+            <div class="eyebrow">ICP priorizado</div>
+            <h3>Despachante/estudio aduanero PyME: 5–30 personas, alto volumen de legajos y clientes que preguntan por estado.</h3>
+            <div class="mini-grid">
+              <div class="mini"><strong>Comprador</strong><span>Socio del estudio o responsable operativo que paga por bajar riesgo, reclamos y horas de seguimiento.</span></div>
+              <div class="mini"><strong>Usuario diario</strong><span>Analista/documentador que persigue factura, packing, BL/AWB/CRT, certificados y permisos.</span></div>
+              <div class="mini"><strong>Influencer</strong><span>ATA/forwarder que necesita que el manifiesto, transporte y documentación lleguen alineados.</span></div>
+              <div class="mini"><strong>Cliente final</strong><span>Importador/exportador que sólo quiere saber “qué falta” y cuándo sale la carga.</span></div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="eyebrow">Jobs-to-be-done</div>
+            <ul>
+              <li>Recibir documentos sin perder versiones ni contexto.</li>
+              <li>Validar que SEDI/factura/packing/SIM/VUCE no se contradigan.</li>
+              <li>Compartir estado con cliente sin llamadas ni WhatsApp repetido.</li>
+              <li>Recordar vencimientos de certificados, temporales, garantías y permisos.</li>
+              <li>Encontrar evidencia años después si hay control o reclamo.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="normativa">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Taxonomía documental argentina</div>
+            <h2>El producto debe hablar el idioma operativo: SEDI, MANI SIM, OM-2133, EC18, VUCE y canal.</h2>
+          </div>
+          <p>El ángulo correcto es “control documental y evidencia” sobre los sistemas oficiales. No reemplaza ARCA/DGA/VUCE/SIM; prepara, ordena y audita lo que cada actor necesita presentar.</p>
+        </div>
+        <div class="grid cards-3">
+          <article class="card">
+            <h3>Comerciales</h3>
+            <p>Factura comercial, packing list, certificado de origen, lista de productos, valores, pesos, moneda, incoterm y datos del proveedor/comprador.</p>
+          </article>
+          <article class="card">
+            <h3>Transporte / ATA</h3>
+            <p>BL, AWB, CRT/carta de porte, manifiesto MANI SIM, MIC/DTA terrestre, constancias de arribo, descarga y depósito.</p>
+          </article>
+          <article class="card">
+            <h3>Destinaciones y permisos</h3>
+            <p>SEDI, destinación de importación OM-2133, exportación EC18, VUCE, SENASA, ANMAT, INAL, ENACOM, garantías y temporales.</p>
+          </article>
+        </div>
+        <div class="research-grid">
+          <article class="card">
+            <h3>Flujo crítico de 8 etapas</h3>
+            <div class="timeline">
+              <div class="step"><div><strong>Pre-arribo</strong><p>ATA transmite manifiesto/MANI SIM y datos de carga.</p></div></div>
+              <div class="step"><div><strong>Arribo y descarga</strong><p>Actualización de estado, depósito y zona primaria.</p></div></div>
+              <div class="step"><div><strong>SEDI / declaración anticipada</strong><p>Validación previa de importación cuando aplica.</p></div></div>
+              <div class="step"><div><strong>Oficialización</strong><p>Despachante carga destinación en SIM/Malvina.</p></div></div>
+              <div class="step"><div><strong>Canal</strong><p>Verde, naranja, rojo o controles específicos.</p></div></div>
+              <div class="step"><div><strong>Pago / garantías</strong><p>Tributos, VEP, garantías para regímenes suspensivos.</p></div></div>
+              <div class="step"><div><strong>Levante</strong><p>Salida de la mercadería si se cumplen condiciones.</p></div></div>
+              <div class="step"><div><strong>Post-despacho</strong><p>Archivo, rectificaciones, evidencia y controles posteriores.</p></div></div>
+            </div>
+          </article>
+          <article class="card">
+            <h3>Riesgos que venden el producto</h3>
+            <div class="risk-list">
+              <div class="risk-item">Datos inconsistentes entre SEDI, factura, packing, documento de transporte y SIM.</div>
+              <div class="risk-item">NCM incorrecta, valores observables o certificado de origen faltante/vencido.</div>
+              <div class="risk-item">Permisos VUCE/SENASA/ANMAT/INAL/ENACOM no gestionados antes del arribo.</div>
+              <div class="risk-item">Errores de manifiesto ATA que bloquean el despacho completo.</div>
+              <div class="risk-item">Falta de trazabilidad ante reclamo, auditoría o control posterior.</div>
+            </div>
+            <p class="notice" style="margin-top:14px">Caveat comercial: no decir “SIRA actual”; usar SEDI donde corresponda. Usar ARCA como nombre vigente, aclarando que muchos enlaces legacy todavía dicen AFIP.</p>
           </article>
         </div>
       </div>
@@ -358,6 +440,26 @@
             </tbody>
           </table>
         </div>
+        <div class="research-grid">
+          <article class="card">
+            <div class="eyebrow">Gap explotable</div>
+            <h3>No vender “GTM enterprise”. Vender operación aduanera moderna para Argentina/Mercosur.</h3>
+            <ul>
+              <li>SAP, Oracle, Thomson, Descartes y CargoWise son fuertes, pero pesados para estudios PyME.</li>
+              <li>Los sistemas locales tienden a ser legacy, escritorio, modulares o cerrados.</li>
+              <li>El diferencial local: NCM/Mercosur, documentación argentina, WhatsApp/mail intake y portal simple.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <div class="eyebrow">Pricing a testear</div>
+            <div class="mini-grid">
+              <div class="mini"><strong>Starter</strong><span>USD 200–500/mes o equivalente ARS. 1 estudio chico, portal y checklists.</span></div>
+              <div class="mini"><strong>Operación</strong><span>Fee por legajo/operación para alinear costo con volumen real.</span></div>
+              <div class="mini"><strong>Mid-market</strong><span>USD 2k–5k/mes si hay multi-sucursal, roles, auditoría y soporte.</span></div>
+              <div class="mini"><strong>Enterprise</strong><span>Integraciones/OCR/API sólo con contrato, no en el MVP.</span></div>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -371,8 +473,9 @@
         <div class="timeline">
           <div class="step"><div><h3>Semana 1: entrevistas</h3><p>10 despachantes/ATA/forwarders. Preguntas: “¿qué documento se pierde más?”, “¿cuánto tiempo se va en perseguir faltantes?”, “¿qué cliente pagaría por visibilidad?”.</p></div></div>
           <div class="step"><div><h3>Semana 2: concierge MVP</h3><p>Usar esta página + una demo de checklist. Operar 3 legajos reales como servicio manual, sin automatización cara.</p></div></div>
-          <div class="step"><div><h3>Semana 3: pricing test</h3><p>Ofertas: ARS/mes por usuario + operaciones, o fee por legajo con portal cliente. Medir willingness-to-pay y objeciones.</p></div></div>
-          <div class="step"><div><h3>Semana 4: build mínimo</h3><p>Sólo si hay pagos/carta de intención: auth, roles, almacenamiento cifrado, auditoría, backups y exportables.</p></div></div>
+          <div class="step"><div><h3>Semana 3: pricing test</h3><p>Testear Starter USD 200–500/mes equivalente ARS + fee por legajo. Contraoferta: “te lo opero concierge y medimos horas ahorradas”.</p></div></div>
+          <div class="step"><div><h3>Semana 4: build mínimo</h3><p>Sólo si hay pagos/carta de intención: auth, roles, almacenamiento cifrado, auditoría, backups, exportables y flujo de onboarding.</p></div></div>
+          <div class="step"><div><h3>Semana 5: wedge técnico</h3><p>Elegir un solo wedge: intake WhatsApp/mail, validador documental, portal cliente o tablero de vencimientos. No construir todo junto.</p></div></div>
         </div>
       </div>
     </section>
@@ -405,7 +508,8 @@
         <li>INDEC — Intercambio Comercial Argentino 2024: exportaciones USD 79.721M, importaciones USD 60.822M, intercambio USD 140.543M.</li>
         <li>INDEC — primeros cinco meses 2025: exportaciones USD 32.467M (+2,6%) e importaciones USD 30.584M (+34,3%).</li>
         <li>ARCA SITA manuales — trámites como multinota electrónica, pedido de documentación, rectificación, prórrogas y solicitudes operativas.</li>
-        <li>SAP, Thomson Reuters ONESOURCE y Descartes — patrones globales: compliance, clasificación, auditoría, customs filing y gestión de comercio exterior.</li>
+        <li>Código Aduanero / InfoLEG y normativa sectorial — roles de despachante, ATA, destinaciones, infracciones y canales de control.</li>
+        <li>Investigación competitiva: SAP GTS, Thomson Reuters ONESOURCE, Descartes, CargoWise, AEB, KlearNow, Gaia Dynamics y sistemas locales.</li>
       </ol>
       <p>Documento comercial, no asesoramiento legal/aduanero. Validar procesos vigentes con normativa aplicable y profesionales matriculados.</p>
     </div>

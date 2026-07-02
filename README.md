@@ -12,7 +12,8 @@ Landing page + market-research-informed prototype for a customs documentation ma
 
 - Single static `index.html`.
 - No build step, no dependencies, no backend.
-- Includes market research, ICPs, feature proposal, competitor framing, and a small interactive operations demo.
+- Includes deep market research, ICPs, feature proposal, competitor framing, regulatory/document taxonomy, GTM plan, pricing hypotheses, and a small interactive operations demo.
+- Research appendix: `research/argentina-customs-taxonomy.md`.
 
 ## Safety note
 
