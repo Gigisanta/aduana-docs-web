@@ -1,0 +1,16 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="20%" cy="0%" r="70%">
+      <stop offset="0%" stop-color="#f5c842" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#f5c842" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#030406"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect x="80" y="86" width="72" height="72" rx="16" fill="#f5c842"/>
+  <text x="116" y="136" font-family="-apple-system, 'SF Pro Display', system-ui, sans-serif" font-size="34" font-weight="950" fill="#050505" text-anchor="middle">AD</text>
+  <text x="80" y="270" font-family="-apple-system, 'SF Pro Display', system-ui, sans-serif" font-size="30" font-weight="900" letter-spacing="2" fill="#f5c842">ADUANADOCS</text>
+  <text x="80" y="340" font-family="-apple-system, 'SF Pro Display', system-ui, sans-serif" font-size="50" font-weight="800" fill="#f7f2e8">Sistema documental</text>
+  <text x="80" y="400" font-family="-apple-system, 'SF Pro Display', system-ui, sans-serif" font-size="50" font-weight="800" fill="#f7f2e8">aduanero.</text>
+  <text x="80" y="470" font-family="-apple-system, 'SF Pro Display', system-ui, sans-serif" font-size="24" fill="#9aa6b6">Despachantes · ATA · forwarders · importadores/exportadores</text>
+</svg>
